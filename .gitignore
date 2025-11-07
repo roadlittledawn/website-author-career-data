@@ -35,3 +35,6 @@ next-env.d.ts
 
 # netlify
 .netlify
+
+# deno (not used in this Node.js project)
+deno.lock

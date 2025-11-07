@@ -1,0 +1,349 @@
+.form {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.error {
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid #fecaca;
+}
+
+.section {
+  background: white;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.section h2 {
+  font-size: 1.25rem;
+  color: #1e293b;
+  margin-bottom: 1rem;
+}
+
+.sectionDesc {
+  color: #64748b;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.field {
+  margin-bottom: 1rem;
+  flex: 1;
+}
+
+.field label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+}
+
+.required {
+  color: #dc2626;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: #667eea;
+}
+
+.field input:disabled,
+.field select:disabled,
+.field textarea:disabled {
+  background: #f1f5f9;
+  cursor: not-allowed;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.fieldError {
+  color: #dc2626;
+  font-size: 0.8125rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.checkboxField input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.checkboxField label {
+  margin: 0;
+  font-weight: 500;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkboxGroup label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  color: #475569;
+  cursor: pointer;
+}
+
+.checkboxGroup input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.tagsInput {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.tagsInput input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
+}
+
+.tagsInput button {
+  padding: 0.75rem 1.5rem;
+  background: #f1f5f9;
+  color: #475569;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.tagsInput button:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.tagsInput button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  background: #e0e7ff;
+  color: #4f46e5;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.tag button {
+  background: none;
+  border: none;
+  color: #4f46e5;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 0.25rem;
+  transition: color 0.2s;
+}
+
+.tag button:hover {
+  color: #3730a3;
+}
+
+.linkGroup {
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  margin-top: 1rem;
+  position: relative;
+}
+
+.addButton {
+  padding: 0.625rem 1.25rem;
+  background: #dbeafe;
+  color: #1e40af;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-bottom: 1rem;
+}
+
+.addButton:hover:not(:disabled) {
+  background: #bfdbfe;
+}
+
+.addButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.removeButton {
+  padding: 0.5rem 1rem;
+  background: #fee2e2;
+  color: #991b1b;
+  border: none;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 0.5rem;
+}
+
+.removeButton:hover:not(:disabled) {
+  background: #fecaca;
+}
+
+.actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  padding-top: 1rem;
+}
+
+.cancelBtn,
+.submitBtn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancelBtn {
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.cancelBtn:hover:not(:disabled) {
+  background: #e2e8f0;
+}
+
+.submitBtn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+}
+
+.cancelBtn:disabled,
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* AI Floating Button */
+.aiFloatingBtn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.aiFloatingBtn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.aiFloatingBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.aiFloatingBtn svg {
+  flex-shrink: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .actions {
+    flex-direction: column-reverse;
+  }
+
+  .cancelBtn,
+  .submitBtn {
+    width: 100%;
+  }
+
+  .aiFloatingBtn {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
+  }
+}

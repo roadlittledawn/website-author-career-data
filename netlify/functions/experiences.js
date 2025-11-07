@@ -102,6 +102,9 @@ async function getExperience(experienceId, db) {
   const collection = db.collection('experiences');
   const experience = await collection.findOne({ _id: new ObjectId(experienceId) });
 
+  console.log('Found experience:', experience ? 'YES' : 'NO');
+  console.log('Experience _id:', experience?._id);
+
   if (!experience) {
     return {
       statusCode: 404,
@@ -110,10 +113,14 @@ async function getExperience(experienceId, db) {
     };
   }
 
+  const responseBody = JSON.stringify({ experience });
+  console.log('Response body length:', responseBody.length);
+  console.log('Response body preview:', responseBody.substring(0, 200));
+
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify({ experience }),
+    body: responseBody,
   };
 }
 

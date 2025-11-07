@@ -11,6 +11,18 @@ const nextConfig = {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
   },
 
+  // Rewrites to ensure Netlify functions work
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/.netlify/functions/:path*',
+          destination: 'http://localhost:9999/.netlify/functions/:path*',
+        },
+      ],
+    };
+  },
+
   // Webpack config for Netlify Functions
   webpack: (config, { isServer }) => {
     // Fixes npm packages that depend on `fs` module

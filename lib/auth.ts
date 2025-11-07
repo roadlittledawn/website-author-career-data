@@ -54,7 +54,7 @@ export function isAuthenticated(): boolean {
  * Login user with username and password
  */
 export async function login(username: string, password: string): Promise<LoginResponse> {
-  const response = await fetch('/.netlify/functions/auth/login', {
+  const response = await fetch('/.netlify/functions/auth-login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -83,7 +83,7 @@ export async function logout(): Promise<void> {
 
   if (token) {
     try {
-      await fetch('/.netlify/functions/auth/logout', {
+      await fetch('/.netlify/functions/auth-logout', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -110,7 +110,7 @@ export async function verifyToken(): Promise<{ valid: boolean; user?: AuthUser }
   }
 
   try {
-    const response = await fetch('/.netlify/functions/auth/verify', {
+    const response = await fetch('/.netlify/functions/auth-verify', {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,

@@ -5,8 +5,6 @@
 
 [functions]
   node_bundler = "esbuild"
-  # Increase timeout for AI requests (may take longer)
-  timeout = 30
 
 # Next.js plugin for Netlify
 [[plugins]]
@@ -14,9 +12,9 @@
 
 [dev]
   command = "npm run dev"
-  port = 3000
+  port = 8888
   targetPort = 3000
-  autoLaunch = true
+  autoLaunch = false
 
 # Security headers
 [[headers]]

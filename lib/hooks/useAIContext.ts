@@ -184,7 +184,7 @@ export function compressContext(context: AIContext): AIContext {
           company: exp.company,
           title: exp.title,
           technologies: exp.technologies?.slice(0, 5),
-        }));
+        })) as any; // Compressed version with only essential fields
     }
   }
 

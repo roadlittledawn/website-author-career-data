@@ -11,18 +11,21 @@ A private web-based admin interface for managing professional career data stored
 - **Use Case**: Personal career data management and maintenance
 
 ### 1.3 Technology Stack
-- **Frontend**: Vanilla HTML, CSS, JavaScript (no frameworks)
+- **Frontend**: Next.js 14 (React) with App Router and TypeScript
 - **Backend**: Netlify Functions (serverless)
 - **Database**: MongoDB (existing `career-data` database)
 - **AI Assistant**: Claude API (Anthropic)
-- **Hosting**: Netlify
-- **Authentication**: Simple session-based authentication
+- **Hosting**: Netlify with Next.js plugin
+- **Authentication**: JWT-based session authentication
+- **State Management**: React hooks and Context API
+- **Form Management**: React Hook Form
+- **Data Fetching**: TanStack React Query
 
 ### 1.4 Deployment Target
-- **Platform**: Netlify
-- **Architecture**: JAMstack (static frontend + serverless functions)
+- **Platform**: Netlify with `@netlify/plugin-nextjs`
+- **Architecture**: Next.js App Router (SSR/SSG) + Serverless Functions
 - **Configuration Management**: Environment variables via Netlify dashboard
-- **Build Output**: Static files in root or designated public directory
+- **Build Output**: `.next` directory (Next.js build output)
 
 ---
 
@@ -1747,7 +1750,7 @@ The following MCP tools are available for interacting with the MongoDB database:
 
 ---
 
-**Document Version**: 1.1
+**Document Version**: 2.0
 **Last Updated**: 2025-11-07
 **Author**: Claude (with Clinton)
-**Status**: Draft for Review - AI Writing Assistant Feature Added
+**Status**: Updated for Next.js Stack - AI Assistant Migrated to React

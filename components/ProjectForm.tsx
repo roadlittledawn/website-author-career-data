@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import type { Project, ProjectType, RoleType } from '@/lib/types';
-import AIButton from './AIAssistant/AIButton';
+import AIChatPanel from './AIChatPanel';
 import styles from './ProjectForm.module.css';
 
 interface ProjectFormProps {
@@ -20,8 +20,7 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
   const [keywords, setKeywords] = useState<string[]>(initialData?.keywords || []);
   const [newKeyword, setNewKeyword] = useState('');
   const [links, setLinks] = useState(initialData?.links || []);
-  const [showAI, setShowAI] = useState(false);
-  const [aiField, setAiField] = useState<string>('');
+  const [showAIPanel, setShowAIPanel] = useState(false);
 
   const {
     register,
@@ -114,9 +113,14 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
     setLinks(links.filter((_, i) => i !== index));
   };
 
-  const openAIAssistant = (field: string) => {
-    setAiField(field);
-    setShowAI(true);
+  const getCurrentProjectData = () => {
+    const formData = watch();
+    return {
+      ...formData,
+      technologies,
+      keywords,
+      links,
+    };
   };
 
   return (
@@ -135,19 +139,12 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
           <label htmlFor="name">
             Project Name <span className={styles.required}>*</span>
           </label>
-          <div className={styles.fieldWithAI}>
-            <input
-              id="name"
-              {...register('name', { required: 'Project name is required' })}
-              placeholder="Enter project name"
-              disabled={isSubmitting}
-            />
-            <AIButton
-              variant="secondary"
-              size="sm"
-              onClick={() => openAIAssistant('name')}
-            />
-          </div>
+          <input
+            id="name"
+            {...register('name', { required: 'Project name is required' })}
+            placeholder="Enter project name"
+            disabled={isSubmitting}
+          />
           {errors.name && <span className={styles.fieldError}>{errors.name.message}</span>}
         </div>
 
@@ -199,93 +196,58 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
           <label htmlFor="overview">
             Overview <span className={styles.required}>*</span>
           </label>
-          <div className={styles.fieldWithAI}>
-            <textarea
-              id="overview"
-              {...register('overview', { required: 'Overview is required' })}
-              rows={4}
-              placeholder="Brief overview of the project"
-              disabled={isSubmitting}
-            />
-            <AIButton
-              variant="secondary"
-              size="sm"
-              onClick={() => openAIAssistant('overview')}
-            />
-          </div>
+          <textarea
+            id="overview"
+            {...register('overview', { required: 'Overview is required' })}
+            rows={4}
+            placeholder="Brief overview of the project"
+            disabled={isSubmitting}
+          />
           {errors.overview && <span className={styles.fieldError}>{errors.overview.message}</span>}
         </div>
 
         <div className={styles.field}>
           <label htmlFor="challenge">Challenge</label>
-          <div className={styles.fieldWithAI}>
-            <textarea
-              id="challenge"
-              {...register('challenge')}
-              rows={3}
-              placeholder="What problem or challenge did this project address?"
-              disabled={isSubmitting}
-            />
-            <AIButton
-              variant="secondary"
-              size="sm"
-              onClick={() => openAIAssistant('challenge')}
-            />
-          </div>
+          <textarea
+            id="challenge"
+            {...register('challenge')}
+            rows={3}
+            placeholder="What problem or challenge did this project address?"
+            disabled={isSubmitting}
+          />
         </div>
 
         <div className={styles.field}>
           <label htmlFor="approach">Approach</label>
-          <div className={styles.fieldWithAI}>
-            <textarea
-              id="approach"
-              {...register('approach')}
-              rows={3}
-              placeholder="How did you approach solving this problem?"
-              disabled={isSubmitting}
-            />
-            <AIButton
-              variant="secondary"
-              size="sm"
-              onClick={() => openAIAssistant('approach')}
-            />
-          </div>
+          <textarea
+            id="approach"
+            {...register('approach')}
+            rows={3}
+            placeholder="How did you approach solving this problem?"
+            disabled={isSubmitting}
+          />
         </div>
 
         <div className={styles.field}>
           <label htmlFor="outcome">Outcome</label>
-          <div className={styles.fieldWithAI}>
-            <textarea
-              id="outcome"
-              {...register('outcome')}
-              rows={3}
-              placeholder="What was the result or deliverable?"
-              disabled={isSubmitting}
-            />
-            <AIButton
-              variant="secondary"
-              size="sm"
-              onClick={() => openAIAssistant('outcome')}
-            />
-          </div>
+          <textarea
+            id="outcome"
+            {...register('outcome')}
+            rows={3}
+            placeholder="What was the result or deliverable?"
+            disabled={isSubmitting}
+          />
         </div>
 
         <div className={styles.field}>
           <label htmlFor="impact">Impact</label>
-          <div className={styles.fieldWithAI}>
-            <textarea
-              id="impact"
-              {...register('impact')}
-              rows={3}
-              placeholder="What was the business or user impact?"
-              disabled={isSubmitting}
-            />
-            <AIButton
-              variant="secondary"
-              size="sm"
-              onClick={() => openAIAssistant('impact')}
-            />
-          </div>
+          <textarea
+            id="impact"
+            {...register('impact')}
+            rows={3}
+            placeholder="What was the business or user impact?"
+            disabled={isSubmitting}
+          />
         </div>
       </div>
 
@@ -510,6 +472,28 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
           {isSubmitting ? 'Saving...' : initialData ? 'Update Project' : 'Create Project'}
         </button>
       </div>
+
+      {/* Floating AI Assistant Button */}
+      <button
+        type="button"
+        onClick={() => setShowAIPanel(true)}
+        className={styles.aiFloatingBtn}
+        disabled={isSubmitting}
+        title="Open AI Writing Assistant"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+        </svg>
+        Ask AI
+      </button>
+
+      {/* AI Chat Panel */}
+      <AIChatPanel
+        isOpen={showAIPanel}
+        onClose={() => setShowAIPanel(false)}
+        contextData={getCurrentProjectData()}
+        contextLabel="Project Form Data"
+      />
     </form>
   );
 }

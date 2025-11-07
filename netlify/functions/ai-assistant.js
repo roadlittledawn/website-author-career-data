@@ -70,7 +70,7 @@ exports.handler = async (event, context) => {
 
     // Call Claude API
     const claudeOptions = {
-      model: options.model || 'claude-3-5-sonnet-20241022',
+      model: options.model || 'claude-sonnet-4-5-20250929',
       max_tokens: Math.min(options.maxTokens || 1000, 4096), // Cap at 4096
       temperature: options.temperature || 0.7,
       system: systemPrompt,

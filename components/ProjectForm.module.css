@@ -80,17 +80,6 @@
   min-height: 80px;
 }
 
-.fieldWithAI {
-  display: flex;
-  gap: 0.5rem;
-  align-items: start;
-}
-
-.fieldWithAI input,
-.fieldWithAI textarea {
-  flex: 1;
-}
-
 .fieldError {
   color: #dc2626;
   font-size: 0.8125rem;
@@ -300,6 +289,42 @@
   transform: none;
 }
 
+/* AI Floating Button */
+.aiFloatingBtn {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.aiFloatingBtn:hover:not(:disabled) {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(102, 126, 234, 0.6);
+}
+
+.aiFloatingBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.aiFloatingBtn svg {
+  flex-shrink: 0;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .row {
@@ -313,5 +338,12 @@
   .cancelBtn,
   .submitBtn {
     width: 100%;
+  }
+
+  .aiFloatingBtn {
+    bottom: 1rem;
+    right: 1rem;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.875rem;
   }
 }

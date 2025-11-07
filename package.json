@@ -1,0 +1,34 @@
+{
+  "name": "career-data-admin",
+  "version": "1.0.0",
+  "description": "Web admin interface for managing career data in MongoDB with AI writing assistant",
+  "main": "index.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'No build step needed for static files'",
+    "deploy": "netlify deploy --prod"
+  },
+  "keywords": [
+    "career",
+    "portfolio",
+    "resume",
+    "mongodb",
+    "netlify",
+    "ai",
+    "claude"
+  ],
+  "author": "Clinton",
+  "license": "MIT",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.0",
+    "mongodb": "^6.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "bcryptjs": "^2.4.3"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

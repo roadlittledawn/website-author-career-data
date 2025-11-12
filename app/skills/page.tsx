@@ -22,7 +22,7 @@ export default function SkillsPage() {
       setIsLoading(true);
       const data = await skillsApi.list();
       const sortedSkills = (data.skills || []).sort((a, b) =>
-        a.name.localeCompare(b.name)
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
       );
       setSkills(sortedSkills);
       setError('');

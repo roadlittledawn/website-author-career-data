@@ -4,7 +4,7 @@
  */
 
 import { authenticatedFetch } from './auth';
-import type { Project, Experience } from './types';
+import type { Project, Experience, Profile } from './types';
 
 // Base API URL
 const API_BASE = '/.netlify/functions';
@@ -143,6 +143,50 @@ export const experiencesApi = {
    */
   async delete(id: string): Promise<{ message: string }> {
     const response = await authenticatedFetch(`${API_BASE}/experiences/${id}`, {
+      method: 'DELETE',
+    });
+    return response.json();
+  },
+};
+
+/**
+ * Profile API
+ * Note: Profile is a singleton - only one profile per user
+ */
+export const profileApi = {
+  /**
+   * Get profile (creates default if doesn't exist)
+   */
+  async get(): Promise<{ profile: Profile }> {
+    const response = await authenticatedFetch(`${API_BASE}/profile`);
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch profile`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Update profile
+   */
+  async update(data: Partial<Profile>): Promise<{ profile: Profile }> {
+    const response = await authenticatedFetch(`${API_BASE}/profile`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to update profile`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Delete profile (reset to default)
+   */
+  async delete(): Promise<{ message: string }> {
+    const response = await authenticatedFetch(`${API_BASE}/profile`, {
       method: 'DELETE',
     });
     return response.json();

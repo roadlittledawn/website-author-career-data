@@ -206,6 +206,10 @@
   position: relative;
 }
 
+.listItem {
+  margin: 1rem 0;
+}
+
 .addButton {
   padding: 0.625rem 1.25rem;
   background: #dbeafe;

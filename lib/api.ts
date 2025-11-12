@@ -4,7 +4,7 @@
  */
 
 import { authenticatedFetch } from './auth';
-import type { Project, Experience, Profile, SkillCategory } from './types';
+import type { Project, Experience, Profile, Skill } from './types';
 
 // Base API URL
 const API_BASE = '/.netlify/functions';
@@ -198,16 +198,20 @@ export const profileApi = {
  */
 export const skillsApi = {
   /**
-   * List all skill categories with optional filters
+   * List all skills with optional filters
    */
   async list(params?: {
-    category?: string;
-    roleType?: string;
+    name?: string;
+    roleRelevance?: string;
+    level?: string;
+    tag?: string;
     search?: string;
-  }): Promise<{ skills: SkillCategory[] }> {
+  }): Promise<{ skills: Skill[] }> {
     const query = new URLSearchParams();
-    if (params?.category) query.append('category', params.category);
-    if (params?.roleType) query.append('roleType', params.roleType);
+    if (params?.name) query.append('name', params.name);
+    if (params?.roleRelevance) query.append('roleRelevance', params.roleRelevance);
+    if (params?.level) query.append('level', params.level);
+    if (params?.tag) query.append('tag', params.tag);
     if (params?.search) query.append('search', params.search);
 
     const url = `${API_BASE}/skills${query.toString() ? `?${query}` : ''}`;
@@ -222,9 +226,9 @@ export const skillsApi = {
   },
 
   /**
-   * Get single skill category by ID
+   * Get single skill by ID
    */
-  async get(id: string): Promise<{ skill: SkillCategory }> {
+  async get(id: string): Promise<{ skill: Skill }> {
     const response = await authenticatedFetch(`${API_BASE}/skills/${id}`);
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Unknown error' }));
@@ -234,9 +238,9 @@ export const skillsApi = {
   },
 
   /**
-   * Create new skill category
+   * Create new skill
    */
-  async create(data: Partial<SkillCategory>): Promise<{ skill: SkillCategory; skillId: string }> {
+  async create(data: Partial<Skill>): Promise<{ skill: Skill; skillId: string }> {
     const response = await authenticatedFetch(`${API_BASE}/skills`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -250,9 +254,9 @@ export const skillsApi = {
   },
 
   /**
-   * Update existing skill category
+   * Update existing skill
    */
-  async update(id: string, data: Partial<SkillCategory>): Promise<{ skill: SkillCategory }> {
+  async update(id: string, data: Partial<Skill>): Promise<{ skill: Skill }> {
     const response = await authenticatedFetch(`${API_BASE}/skills/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -266,7 +270,7 @@ export const skillsApi = {
   },
 
   /**
-   * Delete skill category
+   * Delete skill
    */
   async delete(id: string): Promise<{ message: string }> {
     const response = await authenticatedFetch(`${API_BASE}/skills/${id}`, {

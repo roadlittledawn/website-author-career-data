@@ -1,6 +1,6 @@
 /**
  * Skills API Netlify Function
- * Handles CRUD operations for skills collection
+ * Handles CRUD operations for skills collection (flat structure)
  */
 
 const { MongoClient, ObjectId } = require('mongodb');
@@ -48,33 +48,44 @@ const headers = {
   'Content-Type': 'application/json',
 };
 
-// List all skill categories with optional filters
+// List all skills with optional filters
 async function listSkills(event, db) {
   const params = event.queryStringParameters || {};
   const query = {};
 
-  // Filter by category
-  if (params.category) {
-    query.category = { $regex: params.category, $options: 'i' };
+  // Filter by name
+  if (params.name) {
+    query.name = { $regex: params.name, $options: 'i' };
   }
 
   // Filter by roleRelevance
-  if (params.roleType) {
-    query.roleRelevance = params.roleType;
+  if (params.roleRelevance) {
+    query.roleRelevance = params.roleRelevance;
   }
 
-  // Text search
+  // Filter by level
+  if (params.level) {
+    query.level = params.level;
+  }
+
+  // Filter by tags
+  if (params.tag) {
+    query.tags = params.tag;
+  }
+
+  // Text search across name, tags, and keywords
   if (params.search) {
     query.$or = [
-      { category: { $regex: params.search, $options: 'i' } },
-      { 'skills.name': { $regex: params.search, $options: 'i' } },
+      { name: { $regex: params.search, $options: 'i' } },
+      { tags: { $regex: params.search, $options: 'i' } },
+      { keywords: { $regex: params.search, $options: 'i' } },
     ];
   }
 
   const collection = db.collection('skills');
   const skills = await collection
     .find(query)
-    .sort({ displayOrder: 1, category: 1 })
+    .sort({ name: 1 })
     .toArray();
 
   return {
@@ -84,7 +95,7 @@ async function listSkills(event, db) {
   };
 }
 
-// Get single skill category by ID
+// Get single skill by ID
 async function getSkill(skillId, db) {
   if (!ObjectId.isValid(skillId)) {
     return {
@@ -101,7 +112,7 @@ async function getSkill(skillId, db) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Skill category not found' }),
+      body: JSON.stringify({ error: 'Skill not found' }),
     };
   }
 
@@ -112,17 +123,17 @@ async function getSkill(skillId, db) {
   };
 }
 
-// Create new skill category
+// Create new skill
 async function createSkill(event, db) {
   const data = JSON.parse(event.body);
 
   // Validate required fields
-  if (!data.category || !data.roleRelevance || !data.skills) {
+  if (!data.name || !data.roleRelevance || !data.level || data.rating === undefined || data.yearsOfExperience === undefined) {
     return {
       statusCode: 400,
       headers,
       body: JSON.stringify({
-        error: 'Missing required fields: category, roleRelevance, skills'
+        error: 'Missing required fields: name, roleRelevance, level, rating, yearsOfExperience'
       }),
     };
   }
@@ -130,36 +141,33 @@ async function createSkill(event, db) {
   const collection = db.collection('skills');
   const now = new Date();
 
-  const skillCategory = {
-    category: data.category,
+  const skill = {
+    name: data.name,
     roleRelevance: data.roleRelevance,
-    skills: data.skills.map(skill => ({
-      name: skill.name,
-      proficiency: skill.proficiency || undefined,
-      yearsUsed: skill.yearsUsed || undefined,
-      lastUsed: skill.lastUsed ? new Date(skill.lastUsed) : undefined,
-      keywords: skill.keywords || [],
-      featured: skill.featured || false,
-    })),
-    displayOrder: data.displayOrder || 0,
+    level: data.level,
+    rating: data.rating,
+    yearsOfExperience: data.yearsOfExperience,
+    tags: data.tags || [],
+    iconName: data.iconName || undefined,
+    keywords: data.keywords || [],
     createdAt: now,
     updatedAt: now,
   };
 
-  const result = await collection.insertOne(skillCategory);
+  const result = await collection.insertOne(skill);
 
   return {
     statusCode: 201,
     headers,
     body: JSON.stringify({
-      message: 'Skill category created successfully',
+      message: 'Skill created successfully',
       skillId: result.insertedId,
-      skill: { ...skillCategory, _id: result.insertedId },
+      skill: { ...skill, _id: result.insertedId },
     }),
   };
 }
 
-// Update existing skill category
+// Update existing skill
 async function updateSkill(skillId, event, db) {
   if (!ObjectId.isValid(skillId)) {
     return {
@@ -172,13 +180,13 @@ async function updateSkill(skillId, event, db) {
   const data = JSON.parse(event.body);
   const collection = db.collection('skills');
 
-  // Check if skill category exists
+  // Check if skill exists
   const existing = await collection.findOne({ _id: new ObjectId(skillId) });
   if (!existing) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Skill category not found' }),
+      body: JSON.stringify({ error: 'Skill not found' }),
     };
   }
 
@@ -188,23 +196,20 @@ async function updateSkill(skillId, event, db) {
   };
 
   // Update allowed fields
-  const allowedFields = ['category', 'roleRelevance', 'skills', 'displayOrder'];
+  const allowedFields = [
+    'name',
+    'roleRelevance',
+    'level',
+    'rating',
+    'yearsOfExperience',
+    'tags',
+    'iconName',
+    'keywords'
+  ];
 
   allowedFields.forEach(field => {
     if (data[field] !== undefined) {
-      if (field === 'skills') {
-        // Process skills array
-        update[field] = data[field].map(skill => ({
-          name: skill.name,
-          proficiency: skill.proficiency || undefined,
-          yearsUsed: skill.yearsUsed || undefined,
-          lastUsed: skill.lastUsed ? new Date(skill.lastUsed) : undefined,
-          keywords: skill.keywords || [],
-          featured: skill.featured || false,
-        }));
-      } else {
-        update[field] = data[field];
-      }
+      update[field] = data[field];
     }
   });
 
@@ -227,13 +232,13 @@ async function updateSkill(skillId, event, db) {
     statusCode: 200,
     headers,
     body: JSON.stringify({
-      message: 'Skill category updated successfully',
+      message: 'Skill updated successfully',
       skill: updated,
     }),
   };
 }
 
-// Delete skill category
+// Delete skill
 async function deleteSkill(skillId, db) {
   if (!ObjectId.isValid(skillId)) {
     return {
@@ -250,14 +255,14 @@ async function deleteSkill(skillId, db) {
     return {
       statusCode: 404,
       headers,
-      body: JSON.stringify({ error: 'Skill category not found' }),
+      body: JSON.stringify({ error: 'Skill not found' }),
     };
   }
 
   return {
     statusCode: 200,
     headers,
-    body: JSON.stringify({ message: 'Skill category deleted successfully' }),
+    body: JSON.stringify({ message: 'Skill deleted successfully' }),
   };
 }
 

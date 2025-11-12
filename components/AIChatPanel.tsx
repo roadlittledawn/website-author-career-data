@@ -34,7 +34,7 @@ export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel
 
     const userMessage = input.trim();
     setInput('');
-    const newMessages = [...messages, { role: 'user', content: userMessage }];
+    const newMessages: Message[] = [...messages, { role: 'user' as const, content: userMessage }];
     setMessages(newMessages);
     setIsLoading(true);
 
@@ -76,14 +76,14 @@ export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel
 
       const data = await response.json();
       setMessages(prev => [...prev, {
-        role: 'assistant',
+        role: 'assistant' as const,
         content: data.message.content
       }]);
     } catch (error) {
       console.error('AI request failed:', error);
       setMessages(prev => [
         ...prev,
-        { role: 'assistant', content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Please try again.'}` },
+        { role: 'assistant' as const, content: `Sorry, I encountered an error: ${error instanceof Error ? error.message : 'Please try again.'}` },
       ]);
     } finally {
       setIsLoading(false);

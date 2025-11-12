@@ -1,26 +1,46 @@
 const { MongoClient, ObjectId } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
-const mongoClient = new MongoClient(process.env.MONGODB_URI);
+// MongoDB connection
+let cachedDb = null;
 
 async function connectToDatabase() {
-  await mongoClient.connect();
-  return mongoClient.db(process.env.MONGODB_DB_NAME);
+  if (cachedDb) {
+    return cachedDb;
+  }
+
+  const client = await MongoClient.connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
+
+  const db = client.db('career-data');
+  cachedDb = db;
+  return db;
 }
 
 // Verify JWT token
-function verifyAuth(event) {
-  const authHeader = event.headers.authorization;
+function verifyAuth(authHeader) {
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return { authorized: false, error: 'Missing or invalid authorization header' };
+    throw new Error('No authorization token provided');
   }
 
   const token = authHeader.substring(7);
-  if (token !== process.env.AUTH_TOKEN) {
-    return { authorized: false, error: 'Invalid token' };
-  }
 
-  return { authorized: true };
+  try {
+    const decoded = jwt.verify(token, process.env.AUTH_SECRET);
+    return decoded;
+  } catch (error) {
+    throw new Error('Invalid or expired token');
+  }
 }
+
+// CORS headers
+const headers = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+};
 
 // List all educations
 async function listEducations(event, db) {
@@ -48,10 +68,7 @@ async function listEducations(event, db) {
 
   return {
     statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify({ educations }),
   };
 }
@@ -63,7 +80,7 @@ async function getEducation(event, db) {
   if (!ObjectId.isValid(id)) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Invalid education ID' }),
     };
   }
@@ -74,17 +91,14 @@ async function getEducation(event, db) {
   if (!education) {
     return {
       statusCode: 404,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Education not found' }),
     };
   }
 
   return {
     statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify({ education }),
   };
 }
@@ -97,7 +111,7 @@ async function createEducation(event, db) {
   if (!data.institution || !data.degree || !data.field || !data.graduationYear) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({
         error: 'Missing required fields: institution, degree, field, graduationYear'
       }),
@@ -122,10 +136,7 @@ async function createEducation(event, db) {
 
   return {
     statusCode: 201,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify({
       education: { ...education, _id: result.insertedId },
       educationId: result.insertedId,
@@ -140,7 +151,7 @@ async function updateEducation(event, db) {
   if (!ObjectId.isValid(id)) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Invalid education ID' }),
     };
   }
@@ -166,17 +177,14 @@ async function updateEducation(event, db) {
   if (!result) {
     return {
       statusCode: 404,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Education not found' }),
     };
   }
 
   return {
     statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify({ education: result }),
   };
 }
@@ -188,7 +196,7 @@ async function deleteEducation(event, db) {
   if (!ObjectId.isValid(id)) {
     return {
       statusCode: 400,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Invalid education ID' }),
     };
   }
@@ -199,17 +207,14 @@ async function deleteEducation(event, db) {
   if (result.deletedCount === 0) {
     return {
       statusCode: 404,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Education not found' }),
     };
   }
 
   return {
     statusCode: 200,
-    headers: {
-      'Content-Type': 'application/json',
-      'Access-Control-Allow-Origin': '*',
-    },
+    headers: { 'Content-Type': 'application/json', ...headers },
     body: JSON.stringify({ message: 'Education deleted successfully' }),
   };
 }
@@ -219,26 +224,16 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-      },
+      headers,
       body: '',
     };
   }
 
-  // Verify authentication
-  const authResult = verifyAuth(event);
-  if (!authResult.authorized) {
-    return {
-      statusCode: 401,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: authResult.error }),
-    };
-  }
-
   try {
+    // Verify authentication
+    verifyAuth(event.headers.authorization || event.headers.Authorization);
+
+    // Connect to database
     const db = await connectToDatabase();
 
     // Route based on HTTP method and path
@@ -259,14 +254,25 @@ exports.handler = async (event) => {
 
     return {
       statusCode: 404,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: 'Not found' }),
     };
   } catch (error) {
     console.error('Error:', error);
+
+    // Handle authentication errors
+    if (error.message.includes('token') || error.message.includes('authorization')) {
+      return {
+        statusCode: 401,
+        headers: { 'Content-Type': 'application/json', ...headers },
+        body: JSON.stringify({ error: error.message }),
+      };
+    }
+
+    // Handle other errors
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+      headers: { 'Content-Type': 'application/json', ...headers },
       body: JSON.stringify({ error: error.message }),
     };
   }

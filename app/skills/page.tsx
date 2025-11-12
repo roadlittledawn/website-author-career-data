@@ -54,6 +54,15 @@ export default function SkillsPage() {
     );
   }
 
+  // Calculate stats
+  const totalSkills = skills.length;
+  const writingSkills = skills.filter(skill =>
+    skill.roleRelevance?.some(role => role.toLowerCase().includes('writing'))
+  ).length;
+  const engineeringSkills = skills.filter(skill =>
+    skill.roleRelevance?.some(role => role.toLowerCase().includes('engineering'))
+  ).length;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -64,6 +73,21 @@ export default function SkillsPage() {
         <Link href="/skills/new" className={styles.createBtn}>
           + New Skill
         </Link>
+      </div>
+
+      <div className={styles.stats}>
+        <div className={styles.statCard}>
+          <div className={styles.statValue}>{totalSkills}</div>
+          <div className={styles.statLabel}>Total Skills</div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statValue}>{writingSkills}</div>
+          <div className={styles.statLabel}>Writing Skills</div>
+        </div>
+        <div className={styles.statCard}>
+          <div className={styles.statValue}>{engineeringSkills}</div>
+          <div className={styles.statLabel}>Engineering Skills</div>
+        </div>
       </div>
 
       {error && (

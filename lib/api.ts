@@ -4,7 +4,7 @@
  */
 
 import { authenticatedFetch } from './auth';
-import type { Project, Experience, Profile } from './types';
+import type { Project, Experience, Profile, SkillCategory } from './types';
 
 // Base API URL
 const API_BASE = '/.netlify/functions';
@@ -189,6 +189,93 @@ export const profileApi = {
     const response = await authenticatedFetch(`${API_BASE}/profile`, {
       method: 'DELETE',
     });
+    return response.json();
+  },
+};
+
+/**
+ * Skills API
+ */
+export const skillsApi = {
+  /**
+   * List all skill categories with optional filters
+   */
+  async list(params?: {
+    category?: string;
+    roleType?: string;
+    search?: string;
+  }): Promise<{ skills: SkillCategory[] }> {
+    const query = new URLSearchParams();
+    if (params?.category) query.append('category', params.category);
+    if (params?.roleType) query.append('roleType', params.roleType);
+    if (params?.search) query.append('search', params.search);
+
+    const url = `${API_BASE}/skills${query.toString() ? `?${query}` : ''}`;
+    const response = await authenticatedFetch(url);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch skills`);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Get single skill category by ID
+   */
+  async get(id: string): Promise<{ skill: SkillCategory }> {
+    const response = await authenticatedFetch(`${API_BASE}/skills/${id}`);
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch skill`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Create new skill category
+   */
+  async create(data: Partial<SkillCategory>): Promise<{ skill: SkillCategory; skillId: string }> {
+    const response = await authenticatedFetch(`${API_BASE}/skills`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to create skill`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Update existing skill category
+   */
+  async update(id: string, data: Partial<SkillCategory>): Promise<{ skill: SkillCategory }> {
+    const response = await authenticatedFetch(`${API_BASE}/skills/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to update skill`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Delete skill category
+   */
+  async delete(id: string): Promise<{ message: string }> {
+    const response = await authenticatedFetch(`${API_BASE}/skills/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to delete skill`);
+    }
     return response.json();
   },
 };

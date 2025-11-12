@@ -82,11 +82,11 @@ export default function EducationPage() {
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{bachelorsDegrees}</div>
-          <div className={styles.statLabel}>Bachelor's</div>
+          <div className={styles.statLabel}>Bachelor&apos;s</div>
         </div>
         <div className={styles.statCard}>
           <div className={styles.statValue}>{mastersDegrees}</div>
-          <div className={styles.statLabel}>Master's</div>
+          <div className={styles.statLabel}>Master&apos;s</div>
         </div>
       </div>
 

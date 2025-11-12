@@ -4,7 +4,7 @@
  */
 
 import { authenticatedFetch } from './auth';
-import type { Project, Experience, Profile, Skill } from './types';
+import type { Project, Experience, Profile, Skill, Education } from './types';
 
 // Base API URL
 const API_BASE = '/.netlify/functions';
@@ -279,6 +279,95 @@ export const skillsApi = {
     if (!response.ok) {
       const error = await response.json().catch(() => ({ error: 'Unknown error' }));
       throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to delete skill`);
+    }
+    return response.json();
+  },
+};
+
+/**
+ * Education API
+ */
+export const educationApi = {
+  /**
+   * List all educations with optional filters
+   */
+  async list(params?: {
+    institution?: string;
+    degree?: string;
+    field?: string;
+    graduationYear?: number;
+  }): Promise<{ educations: Education[] }> {
+    const query = new URLSearchParams();
+    if (params?.institution) query.append('institution', params.institution);
+    if (params?.degree) query.append('degree', params.degree);
+    if (params?.field) query.append('field', params.field);
+    if (params?.graduationYear) query.append('graduationYear', String(params.graduationYear));
+
+    const url = `${API_BASE}/educations${query.toString() ? `?${query}` : ''}`;
+    const response = await authenticatedFetch(url);
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch educations`);
+    }
+
+    return response.json();
+  },
+
+  /**
+   * Get single education by ID
+   */
+  async get(id: string): Promise<{ education: Education }> {
+    const response = await authenticatedFetch(`${API_BASE}/educations/${id}`);
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch education`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Create new education
+   */
+  async create(data: Partial<Education>): Promise<{ education: Education; educationId: string }> {
+    const response = await authenticatedFetch(`${API_BASE}/educations`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to create education`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Update existing education
+   */
+  async update(id: string, data: Partial<Education>): Promise<{ education: Education }> {
+    const response = await authenticatedFetch(`${API_BASE}/educations/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to update education`);
+    }
+    return response.json();
+  },
+
+  /**
+   * Delete education
+   */
+  async delete(id: string): Promise<{ message: string }> {
+    const response = await authenticatedFetch(`${API_BASE}/educations/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to delete education`);
     }
     return response.json();
   },

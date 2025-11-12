@@ -16,7 +16,7 @@ export default function DashboardPage() {
 
         <a href="/experiences">
           <div className="dashboard-card">
-            <h2>Experiences</h2>
+            <h2>Experience</h2>
             <p>Track your work history and achievements</p>
           </div>
         </a>
@@ -34,15 +34,12 @@ export default function DashboardPage() {
           </div>
         </a>
 
-        <div className="dashboard-card">
-          <h2>Education</h2>
-          <p>Manage academic background</p>
-        </div>
-
-        <div className="dashboard-card">
-          <h2>Keywords</h2>
-          <p>ATS optimization keywords</p>
-        </div>
+        <a href="/education">
+          <div className="dashboard-card">
+            <h2>Education</h2>
+            <p>Manage academic background</p>
+          </div>
+        </a>
       </div>
     </main>
   );

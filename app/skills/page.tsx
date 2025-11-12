@@ -30,8 +30,8 @@ export default function SkillsPage() {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this skill?')) {
+  const handleDelete = async (id: string, name: string) => {
+    if (!confirm(`Are you sure you want to delete "${name}"?`)) {
       return;
     }
 
@@ -81,57 +81,39 @@ export default function SkillsPage() {
 
             return (
               <div key={skillId} className={styles.skillCard}>
-                <div className={styles.cardHeader}>
-                  <h3>{skill.name}</h3>
+                <div className={styles.cardContent}>
+                  <h3 className={styles.skillName}>{skill.name}</h3>
+
                   <div className={styles.rating}>
                     {'★'.repeat(skill.rating)}{'☆'.repeat(5 - skill.rating)}
                   </div>
+
+                  <div className={styles.level}>{skill.level}</div>
+
+                  {skill.roleRelevance && skill.roleRelevance.length > 0 && (
+                    <div className={styles.roles}>
+                      {skill.roleRelevance.map((role, idx) => (
+                        <span key={idx} className={styles.roleTag}>
+                          {role}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
-
-                <div className={styles.skillInfo}>
-                  <span className={styles.level}>{skill.level}</span>
-                  <span className={styles.years}>
-                    {skill.yearsOfExperience} {skill.yearsOfExperience === 1 ? 'year' : 'years'}
-                  </span>
-                </div>
-
-                {skill.roleRelevance && skill.roleRelevance.length > 0 && (
-                  <div className={styles.roleTypes}>
-                    {skill.roleRelevance.map((role, idx) => (
-                      <span key={idx} className={styles.roleTag}>
-                        {role}
-                      </span>
-                    ))}
-                  </div>
-                )}
-
-                {skill.tags && skill.tags.length > 0 && (
-                  <div className={styles.tags}>
-                    {skill.tags.slice(0, 3).map((tag, idx) => (
-                      <span key={idx} className={styles.tag}>
-                        {tag}
-                      </span>
-                    ))}
-                    {skill.tags.length > 3 && (
-                      <span className={styles.tag}>
-                        +{skill.tags.length - 3}
-                      </span>
-                    )}
-                  </div>
-                )}
 
                 <div className={styles.cardActions}>
-                  <Link href={`/skills/${skillId}`} className={styles.viewBtn}>
-                    View
+                  <Link href={`/skills/${skillId}`} className={styles.iconBtn} title="View">
+                    👁️
                   </Link>
-                  <Link href={`/skills/${skillId}/edit`} className={styles.editBtn}>
-                    Edit
+                  <Link href={`/skills/${skillId}/edit`} className={styles.iconBtn} title="Edit">
+                    ✏️
                   </Link>
                   <button
-                    onClick={() => handleDelete(skillId)}
-                    className={styles.deleteBtn}
+                    onClick={() => handleDelete(skillId, skill.name)}
+                    className={styles.iconBtn}
+                    title="Delete"
                   >
-                    Delete
+                    🗑️
                   </button>
                 </div>
               </div>

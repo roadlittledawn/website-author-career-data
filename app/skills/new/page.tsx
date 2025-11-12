@@ -3,13 +3,13 @@
 import { useRouter } from 'next/navigation';
 import SkillsForm from '@/components/SkillsForm';
 import { authenticatedFetch } from '@/lib/auth';
-import type { SkillCategory } from '@/lib/types';
+import type { Skill } from '@/lib/types';
 import styles from './new.module.css';
 
 export default function NewSkillPage() {
   const router = useRouter();
 
-  const handleSubmit = async (data: Partial<SkillCategory>) => {
+  const handleSubmit = async (data: Partial<Skill>) => {
     const response = await authenticatedFetch('/.netlify/functions/skills', {
       method: 'POST',
       headers: {
@@ -20,7 +20,7 @@ export default function NewSkillPage() {
 
     if (!response.ok) {
       const error = await response.json();
-      throw new Error(error.error || 'Failed to create skill category');
+      throw new Error(error.error || 'Failed to create skill');
     }
 
     const result = await response.json();
@@ -34,8 +34,8 @@ export default function NewSkillPage() {
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>New Skill Category</h1>
-        <p>Add a new category of skills to your profile</p>
+        <h1>New Skill</h1>
+        <p>Add a new skill to your profile</p>
       </div>
 
       <SkillsForm

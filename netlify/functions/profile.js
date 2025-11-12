@@ -51,7 +51,7 @@ const headers = {
 
 // Get profile (or create if doesn't exist)
 async function getProfile(db) {
-  const collection = db.collection('profile');
+  const collection = db.collection('careerprofiles');
   let profile = await collection.findOne({});
 
   // If no profile exists, create a default one
@@ -101,7 +101,7 @@ async function getProfile(db) {
 // Update profile
 async function updateProfile(event, db) {
   const data = JSON.parse(event.body);
-  const collection = db.collection('profile');
+  const collection = db.collection('careerprofiles');
 
   // Get existing profile or create ID for new one
   const existing = await collection.findOne({});
@@ -155,7 +155,7 @@ async function updateProfile(event, db) {
 
 // Delete profile (reset to default)
 async function deleteProfile(db) {
-  const collection = db.collection('profile');
+  const collection = db.collection('careerprofiles');
   await collection.deleteMany({});
 
   return {

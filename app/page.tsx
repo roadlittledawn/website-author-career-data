@@ -21,11 +21,12 @@ export default function DashboardPage() {
           </div>
         </a>
 
-        <div className="dashboard-card">
-          <h2>Skills</h2>
-          <p>Organize your skills by category</p>
-        </div>
-
+        <a href="/skills">
+          <div className="dashboard-card">
+            <h2>Skills</h2>
+            <p>Organize your skills by category</p>
+          </div>
+        </a>
         <a href="/projects">
           <div className="dashboard-card">
             <h2>Projects</h2>

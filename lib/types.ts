@@ -74,8 +74,23 @@ export interface Experience {
   updatedAt: Date;
 }
 
-// Skills Collection
+// Skills Collection (Flat Structure)
 export interface Skill {
+  _id?: string;
+  name: string;
+  roleRelevance: string[];
+  level: string; // e.g., "Beginner", "Intermediate", "Advanced", "Expert"
+  rating: number; // 1-5
+  yearsOfExperience: number;
+  tags: string[];
+  iconName?: string;
+  keywords: string[];
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// Legacy: Old nested structure (deprecated)
+export interface LegacySkillItem {
   name: string;
   proficiency?: ProficiencyLevel;
   yearsUsed?: number;
@@ -88,7 +103,7 @@ export interface SkillCategory {
   _id?: string;
   category: string;
   roleRelevance: RoleType[];
-  skills: Skill[];
+  skills: LegacySkillItem[];
   displayOrder?: number;
   createdAt: Date;
   updatedAt: Date;

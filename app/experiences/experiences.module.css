@@ -85,7 +85,7 @@
 
 .experienceGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  grid-template-columns: 1;
   gap: 1.5rem;
 }
 
@@ -189,7 +189,7 @@
 
 .cardActions a,
 .cardActions button {
-  flex: 1;
+  flex: 0 0 auto;
   padding: 0.5rem 1rem;
   border: none;
   border-radius: 0.375rem;

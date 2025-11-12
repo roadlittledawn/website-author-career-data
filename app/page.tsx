@@ -7,10 +7,12 @@ export default function DashboardPage() {
       </p>
 
       <div className="dashboard-grid">
-        <div className="dashboard-card">
-          <h2>Profile</h2>
-          <p>Manage your professional profile and positioning</p>
-        </div>
+        <a href="/profile">
+          <div className="dashboard-card">
+            <h2>Profile</h2>
+            <p>Manage your professional profile and positioning</p>
+          </div>
+        </a>
 
         <a href="/experiences">
           <div className="dashboard-card">

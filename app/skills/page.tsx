@@ -21,7 +21,10 @@ export default function SkillsPage() {
     try {
       setIsLoading(true);
       const data = await skillsApi.list();
-      setSkills(data.skills || []);
+      const sortedSkills = (data.skills || []).sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+      setSkills(sortedSkills);
       setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load skills');

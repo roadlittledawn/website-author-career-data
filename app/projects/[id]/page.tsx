@@ -196,42 +196,13 @@ export default function ProjectDetailPage() {
             <div className={styles.links}>
               {project.links.map((link, idx) => (
                 <div key={idx} className={styles.link}>
-                  <span className={styles.linkType}>{link.type}</span>
+                  <span className={styles.linkType}>{link.type.replace('_', ' ')}</span>
                   <a href={link.url} target="_blank" rel="noopener noreferrer">
-                    {link.url}
+                    {link.linkText || link.url}
                   </a>
-                  {link.description && (
-                    <p className={styles.linkDesc}>{link.description}</p>
-                  )}
                 </div>
               ))}
             </div>
-          </div>
-        )}
-
-        {/* Writing Sample */}
-        {project.writingSample && (
-          <div className={styles.section}>
-            <h2>Writing Sample</h2>
-            {project.writingSample.googleDocId && (
-              <div className={styles.writingSample}>
-                <p>
-                  <strong>Google Doc:</strong>{' '}
-                  <a
-                    href={`https://docs.google.com/document/d/${project.writingSample.googleDocId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    View Document
-                  </a>
-                </p>
-                {project.writingSample.format && (
-                  <p>
-                    <strong>Format:</strong> {project.writingSample.format}
-                  </p>
-                )}
-              </div>
-            )}
           </div>
         )}
       </div>

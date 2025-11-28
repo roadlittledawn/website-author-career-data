@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { projectsApi } from "@/lib/api";
 import type { Project } from "@/lib/types";
 import styles from "./projects.module.css";
@@ -168,18 +169,18 @@ export default function ProjectsPage() {
               </div>
 
               <div className={styles.cardActions}>
-                <button
-                  onClick={() => router.push(`/projects/${project._id}`)}
+                <Link
+                  href={`/projects/${project._id}`}
                   className={styles.viewBtn}
                 >
                   View
-                </button>
-                <button
-                  onClick={() => router.push(`/projects/${project._id}/edit`)}
+                </Link>
+                <Link
+                  href={`/projects/${project._id}/edit`}
                   className={styles.editBtn}
                 >
                   Edit
-                </button>
+                </Link>
                 <button
                   onClick={() => handleDelete(project._id!)}
                   className={styles.deleteBtn}

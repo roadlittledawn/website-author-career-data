@@ -229,7 +229,8 @@
   gap: 0.5rem;
 }
 
-.cardActions button {
+.cardActions button,
+.cardActions a {
   flex: 1;
   padding: 0.5rem 1rem;
   border: none;
@@ -238,6 +239,9 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
 }
 
 .viewBtn {

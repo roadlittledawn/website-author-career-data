@@ -38,6 +38,26 @@ node migrations/remove-bullet-points.js
 - Removes `bulletPoints` field from all matching documents
 - Reports migration results
 
+### remove-writing-sample-field.js
+
+**Date:** 2025-11-28
+
+**Purpose:** Removes the `writingSample` field from projects collection and consolidates into `links` array.
+
+**Reason:** Simplifies data model by using a single flexible `links` array for all project links (GitHub, demos, writing samples, etc.) instead of separate fields.
+
+**Usage:**
+
+```bash
+node migrations/remove-writing-sample-field.js
+```
+
+**What it does:**
+- Migrates existing writingSample data to links array with type 'writing_sample'
+- Updates links structure from `{type, url, description}` to `{url, linkText, type}`
+- Removes writingSample field from all documents
+- Reports migration results
+
 ## Migration Best Practices
 
 1. **Backup First:** Always backup your database before running migrations

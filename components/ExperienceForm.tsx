@@ -695,6 +695,8 @@ export default function ExperienceForm({
         onClose={() => setShowAIPanel(false)}
         contextData={getCurrentExperienceData()}
         contextLabel="Experience Form Data"
+        collection="experiences"
+        roleType={watch('roleTypes')?.[0]}
       />
     </form>
   );

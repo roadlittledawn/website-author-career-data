@@ -154,7 +154,6 @@ async function createProject(event, db) {
     keywords: data.keywords || [],
     links: data.links || [],
     roleTypes: data.roleTypes,
-    writingSample: data.writingSample,
     createdAt: now,
     updatedAt: now,
   };
@@ -204,7 +203,7 @@ async function updateProject(projectId, event, db) {
   const allowedFields = [
     'name', 'type', 'date', 'featured', 'overview', 'challenge',
     'approach', 'outcome', 'impact', 'technologies', 'keywords',
-    'links', 'roleTypes', 'writingSample'
+    'links', 'roleTypes'
   ];
 
   allowedFields.forEach(field => {

@@ -123,17 +123,11 @@ export interface Project {
   technologies: string[];
   keywords?: string[];
   links?: Array<{
-    type: string;
     url: string;
-    description?: string;
+    linkText: string;
+    type: 'github' | 'demo' | 'writing_sample' | 'other';
   }>;
   roleTypes: RoleType[];
-  writingSample?: {
-    googleDocId?: string;
-    subjects?: string[];
-    authoringTools?: string[];
-    format?: string;
-  };
   createdAt: Date;
   updatedAt: Date;
 }

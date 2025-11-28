@@ -14,9 +14,10 @@ interface AIChatPanelProps {
   contextData: any;
   contextLabel: string;
   collection?: string;
+  roleType?: string;
 }
 
-export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel, collection = 'projects' }: AIChatPanelProps) {
+export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel, collection = 'projects', roleType }: AIChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -63,7 +64,7 @@ export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel
           context: {
             editingContext: {
               collection,
-              roleType: 'technical_writer',
+              roleType,
             },
             currentItem: contextData,
           },

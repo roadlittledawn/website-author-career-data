@@ -696,6 +696,7 @@ export default function ExperienceForm({
         contextData={getCurrentExperienceData()}
         contextLabel="Experience Form Data"
         collection="experiences"
+        roleType={watch('roleTypes')?.[0]}
       />
     </form>
   );

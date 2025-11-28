@@ -40,8 +40,6 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
       outcome: initialData?.outcome || '',
       impact: initialData?.impact || '',
       roleTypes: initialData?.roleTypes || [],
-      writingSampleGoogleDocId: initialData?.writingSample?.googleDocId || '',
-      writingSampleFormat: initialData?.writingSample?.format || '',
     },
   });
 
@@ -64,10 +62,6 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
         keywords,
         links: links.length > 0 ? links : undefined,
         roleTypes: data.roleTypes,
-        writingSample: data.writingSampleGoogleDocId ? {
-          googleDocId: data.writingSampleGoogleDocId,
-          format: data.writingSampleFormat,
-        } : undefined,
       };
 
       await onSubmit(projectData);
@@ -100,7 +94,7 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
   };
 
   const addLink = () => {
-    setLinks([...links, { type: 'github', url: '', description: '' }]);
+    setLinks([...links, { url: '', linkText: '', type: 'github' }]);
   };
 
   const updateLink = (index: number, field: string, value: string) => {
@@ -385,8 +379,8 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
                   disabled={isSubmitting}
                 >
                   <option value="github">GitHub</option>
-                  <option value="demo">Live Demo</option>
-                  <option value="docs">Documentation</option>
+                  <option value="demo">Demo/Live Site</option>
+                  <option value="writing_sample">Writing Sample</option>
                   <option value="other">Other</option>
                 </select>
               </div>
@@ -404,12 +398,12 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
             </div>
 
             <div className={styles.field}>
-              <label>Description</label>
+              <label>Link Text</label>
               <input
                 type="text"
-                value={link.description || ''}
-                onChange={(e) => updateLink(idx, 'description', e.target.value)}
-                placeholder="Optional description"
+                value={link.linkText || ''}
+                onChange={(e) => updateLink(idx, 'linkText', e.target.value)}
+                placeholder="e.g., View on GitHub, Read the docs"
                 disabled={isSubmitting}
               />
             </div>
@@ -424,34 +418,6 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
             </button>
           </div>
         ))}
-      </div>
-
-      {/* Writing Sample */}
-      <div className={styles.section}>
-        <h2>Writing Sample (Optional)</h2>
-        <p className={styles.sectionDesc}>For technical writing projects</p>
-
-        <div className={styles.row}>
-          <div className={styles.field}>
-            <label htmlFor="writingSampleGoogleDocId">Google Doc ID</label>
-            <input
-              id="writingSampleGoogleDocId"
-              {...register('writingSampleGoogleDocId')}
-              placeholder="Document ID from Google Docs URL"
-              disabled={isSubmitting}
-            />
-          </div>
-
-          <div className={styles.field}>
-            <label htmlFor="writingSampleFormat">Format</label>
-            <input
-              id="writingSampleFormat"
-              {...register('writingSampleFormat')}
-              placeholder="e.g., Tutorial, API Reference, Guide"
-              disabled={isSubmitting}
-            />
-          </div>
-        </div>
       </div>
 
       {/* Form Actions */}

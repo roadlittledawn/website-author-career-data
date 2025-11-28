@@ -13,9 +13,10 @@ interface AIChatPanelProps {
   onClose: () => void;
   contextData: any;
   contextLabel: string;
+  collection?: string;
 }
 
-export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel }: AIChatPanelProps) {
+export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel, collection = 'projects' }: AIChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -61,7 +62,7 @@ export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel
           messages: claudeMessages,
           context: {
             editingContext: {
-              collection: 'projects',
+              collection,
               roleType: 'technical_writer',
             },
             currentItem: contextData,
@@ -114,7 +115,7 @@ export default function AIChatPanel({ isOpen, onClose, contextData, contextLabel
 
         <div className={styles.contextSection}>
           <details>
-            <summary>View Project Context</summary>
+            <summary>View Data Context</summary>
             <pre className={styles.contextData}>
               {JSON.stringify(contextData, null, 2)}
             </pre>

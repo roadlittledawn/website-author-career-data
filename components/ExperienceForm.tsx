@@ -695,6 +695,7 @@ export default function ExperienceForm({
         onClose={() => setShowAIPanel(false)}
         contextData={getCurrentExperienceData()}
         contextLabel="Experience Form Data"
+        collection="experiences"
       />
     </form>
   );

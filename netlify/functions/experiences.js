@@ -130,12 +130,12 @@ async function createExperience(event, db) {
 
   // Validate required fields
   if (!data.company || !data.location || !data.title || !data.startDate ||
-      !data.roleTypes || !data.responsibilities || !data.technologies || !data.bulletPoints) {
+      !data.roleTypes || !data.responsibilities || !data.technologies) {
     return {
       statusCode: 400,
       headers,
       body: JSON.stringify({
-        error: 'Missing required fields: company, location, title, startDate, roleTypes, responsibilities, technologies, bulletPoints'
+        error: 'Missing required fields: company, location, title, startDate, roleTypes, responsibilities, technologies'
       }),
     };
   }
@@ -156,7 +156,6 @@ async function createExperience(event, db) {
     achievements: data.achievements || [],
     technologies: data.technologies,
     crossFunctional: data.crossFunctional || [],
-    bulletPoints: data.bulletPoints,
     displayOrder: data.displayOrder || 0,
     featured: data.featured || false,
     createdAt: now,
@@ -208,7 +207,7 @@ async function updateExperience(experienceId, event, db) {
   const allowedFields = [
     'company', 'location', 'title', 'industry', 'startDate', 'endDate',
     'organizations', 'roleTypes', 'responsibilities', 'achievements',
-    'technologies', 'crossFunctional', 'bulletPoints', 'displayOrder', 'featured'
+    'technologies', 'crossFunctional', 'displayOrder', 'featured'
   ];
 
   allowedFields.forEach(field => {

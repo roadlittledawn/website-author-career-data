@@ -161,9 +161,6 @@ export function compressContext(context: AIContext): AIContext {
     if (item.achievements) {
       item.achievements = item.achievements.slice(0, 5);
     }
-    if (item.bulletPoints) {
-      item.bulletPoints = item.bulletPoints.slice(0, 5);
-    }
     if (item.technologies) {
       item.technologies = item.technologies.slice(0, 10);
     }

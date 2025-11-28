@@ -133,16 +133,6 @@ export default function ExperienceDetailPage() {
           </ul>
         </div>
 
-        {/* Resume Bullet Points */}
-        <div className={styles.section}>
-          <h2>Resume Bullet Points</h2>
-          <ul className={styles.list}>
-            {experience.bulletPoints.map((bullet, idx) => (
-              <li key={idx}>{bullet}</li>
-            ))}
-          </ul>
-        </div>
-
         {/* Technologies */}
         <div className={styles.section}>
           <h2>Technologies</h2>
@@ -159,14 +149,20 @@ export default function ExperienceDetailPage() {
         {experience.achievements && experience.achievements.length > 0 && (
           <div className={styles.section}>
             <h2>Key Achievements</h2>
-            {experience.achievements.map((achievement, idx) => (
-              <div key={idx} className={styles.achievement}>
-                <p className={styles.achievementDesc}>{achievement.description}</p>
-                {achievement.impact && (
-                  <p className={styles.achievementImpact}>Impact: {achievement.impact}</p>
-                )}
-              </div>
-            ))}
+            <ul className={styles.achievementsList}>
+              {experience.achievements.map((achievement, idx) => (
+                <li key={idx} className={styles.achievementItem}>
+                  <div className={styles.achievementContent}>
+                    <p className={styles.achievementDesc}>{achievement.description}</p>
+                    {achievement.impact && (
+                      <p className={styles.achievementImpact}>
+                        <strong>Impact:</strong> {achievement.impact}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
           </div>
         )}
 

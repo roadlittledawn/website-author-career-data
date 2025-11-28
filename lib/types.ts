@@ -67,7 +67,6 @@ export interface Experience {
   }>;
   technologies: string[];
   crossFunctional?: string[];
-  bulletPoints: string[];
   displayOrder?: number;
   featured?: boolean;
   createdAt: Date;

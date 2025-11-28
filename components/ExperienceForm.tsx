@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import type { Experience, RoleType } from "@/lib/types";
 import AIChatPanel from "./AIChatPanel";
+import Button from "./Button";
 import styles from "./ExperienceForm.module.css";
 
 interface ExperienceFormProps {
@@ -31,10 +32,8 @@ export default function ExperienceForm({
     initialData?.responsibilities || []
   );
   const [newResp, setNewResp] = useState("");
-  const [bulletPoints, setBulletPoints] = useState<string[]>(
-    initialData?.bulletPoints || []
-  );
-  const [newBullet, setNewBullet] = useState("");
+  const [editingRespIndex, setEditingRespIndex] = useState<number | null>(null);
+  const [editingRespText, setEditingRespText] = useState("");
   const [achievements, setAchievements] = useState(
     initialData?.achievements || []
   );
@@ -86,7 +85,6 @@ export default function ExperienceForm({
         technologies,
         crossFunctional:
           crossFunctional.length > 0 ? crossFunctional : undefined,
-        bulletPoints,
         featured: data.featured,
       };
 
@@ -132,15 +130,24 @@ export default function ExperienceForm({
     setResponsibilities(responsibilities.filter((_, i) => i !== index));
   };
 
-  const addBulletPoint = () => {
-    if (newBullet.trim()) {
-      setBulletPoints([...bulletPoints, newBullet.trim()]);
-      setNewBullet("");
-    }
+  const startEditingResponsibility = (index: number) => {
+    setEditingRespIndex(index);
+    setEditingRespText(responsibilities[index]);
   };
 
-  const removeBulletPoint = (index: number) => {
-    setBulletPoints(bulletPoints.filter((_, i) => i !== index));
+  const saveResponsibility = (index: number) => {
+    if (editingRespText.trim()) {
+      const updated = [...responsibilities];
+      updated[index] = editingRespText.trim();
+      setResponsibilities(updated);
+    }
+    setEditingRespIndex(null);
+    setEditingRespText("");
+  };
+
+  const cancelEditingResponsibility = () => {
+    setEditingRespIndex(null);
+    setEditingRespText("");
   };
 
   const addAchievement = () => {
@@ -185,7 +192,6 @@ export default function ExperienceForm({
       technologies,
       organizations,
       responsibilities,
-      bulletPoints,
       achievements,
       crossFunctional,
     };
@@ -414,87 +420,81 @@ export default function ExperienceForm({
             rows={2}
             disabled={isSubmitting}
           />
-          <button
+          <Button
             type="button"
             onClick={addResponsibility}
             disabled={isSubmitting}
+            variant="primary"
+            size="small"
           >
             Add Responsibility
-          </button>
+          </Button>
         </div>
 
         <div className={styles.list}>
           {responsibilities.map((resp, idx) => (
-            <ul key={idx} className={styles.listItem}>
-              <li>
-                <p>{resp}</p>
-                <p>
-                  <button
-                    type="button"
-                    onClick={() => removeResponsibility(idx)}
+            <div key={idx} className={styles.listItem}>
+              {editingRespIndex === idx ? (
+                <>
+                  <textarea
+                    value={editingRespText}
+                    onChange={(e) => setEditingRespText(e.target.value)}
+                    rows={2}
                     disabled={isSubmitting}
-                  >
-                    Remove
-                  </button>
-                </p>
-              </li>
-            </ul>
+                    className={styles.editTextarea}
+                  />
+                  <div className={styles.buttonGroup}>
+                    <Button
+                      type="button"
+                      onClick={() => saveResponsibility(idx)}
+                      disabled={isSubmitting}
+                      variant="primary"
+                      size="small"
+                    >
+                      Save
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={cancelEditingResponsibility}
+                      disabled={isSubmitting}
+                      variant="ghost"
+                      size="small"
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className={styles.listText}>{resp}</p>
+                  <div className={styles.buttonGroup}>
+                    <Button
+                      type="button"
+                      onClick={() => startEditingResponsibility(idx)}
+                      disabled={isSubmitting}
+                      variant="ghost"
+                      size="small"
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={() => removeResponsibility(idx)}
+                      disabled={isSubmitting}
+                      variant="danger"
+                      size="small"
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           ))}
         </div>
         {responsibilities.length === 0 && (
           <span className={styles.fieldError}>
             At least one responsibility is required
-          </span>
-        )}
-      </div>
-
-      {/* Bullet Points */}
-      <div className={styles.section}>
-        <h2>
-          Resume Bullet Points <span className={styles.required}>*</span>
-        </h2>
-        <p className={styles.sectionDesc}>
-          Concise, impactful bullets for resumes
-        </p>
-
-        <div className={styles.listInput}>
-          <textarea
-            value={newBullet}
-            onChange={(e) => setNewBullet(e.target.value)}
-            placeholder="Add a bullet point"
-            rows={2}
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={addBulletPoint}
-            disabled={isSubmitting}
-          >
-            Add Bullet
-          </button>
-        </div>
-
-        <div className={styles.list}>
-          {bulletPoints.map((bullet, idx) => (
-            <ul key={idx} className={styles.listItem}>
-              <li>
-                <p>{bullet}</p>
-                <p>
-                  <button
-                    type="button"
-                    onClick={() => removeBulletPoint(idx)}
-                    disabled={isSubmitting}
-                  >
-                    Remove
-                  </button>
-                </p>
-              </li>
-            </ul>
-          ))}
-        </div>
-        {bulletPoints.length === 0 && (
-          <span className={styles.fieldError}>
-            At least one bullet point is required
           </span>
         )}
       </div>
@@ -643,22 +643,21 @@ export default function ExperienceForm({
 
       {/* Form Actions */}
       <div className={styles.actions}>
-        <button
+        <Button
           type="button"
           onClick={onCancel}
-          className={styles.cancelBtn}
+          variant="secondary"
           disabled={isSubmitting}
         >
           Cancel
-        </button>
-        <button
+        </Button>
+        <Button
           type="submit"
-          className={styles.submitBtn}
+          variant="primary"
           disabled={
             isSubmitting ||
             technologies.length === 0 ||
-            responsibilities.length === 0 ||
-            bulletPoints.length === 0
+            responsibilities.length === 0
           }
         >
           {isSubmitting
@@ -666,7 +665,7 @@ export default function ExperienceForm({
             : initialData
             ? "Update Experience"
             : "Create Experience"}
-        </button>
+        </Button>
       </div>
 
       {/* Floating AI Assistant Button */}

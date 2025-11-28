@@ -207,7 +207,38 @@
 }
 
 .listItem {
-  margin: 1rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f8fafc;
+  border-radius: 0.5rem;
+  margin-bottom: 0.75rem;
+  border: 1px solid #e2e8f0;
+}
+
+.listText {
+  flex: 1;
+  margin: 0;
+  line-height: 1.6;
+  color: #334155;
+}
+
+.editTextarea {
+  flex: 1;
+  padding: 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.375rem;
+  font-family: inherit;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  resize: vertical;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
 .addButton {

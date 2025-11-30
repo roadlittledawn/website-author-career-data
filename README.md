@@ -225,6 +225,34 @@ All endpoints require JWT authentication via `Authorization: Bearer <token>` hea
 
 ## Development
 
+### Branch Strategy
+
+- **`develop`**: Default branch for active development. All feature branches are created from and merged into `develop`.
+- **`main`**: Release/production branch that deploys to Netlify.
+
+### Pull Request Workflow
+
+**PRs to `develop`:**
+1. Create feature branch from `develop`
+2. Make changes and push to origin
+3. Open PR targeting `develop`
+4. GitHub Actions runs build validation (required check)
+5. Merge after build passes
+
+**PRs to `main` (releases):**
+1. Open PR from `develop` to `main`
+2. Netlify triggers a deploy preview build (required check)
+3. Review the deploy preview at the provided URL
+4. Merge after preview build succeeds
+5. Netlify automatically deploys to production
+
+### CI/CD Checks
+
+| Target Branch | Check Type | Required | Description |
+|---------------|------------|----------|-------------|
+| `develop` | GitHub Actions | Yes | Runs build to validate PR won't break the build |
+| `main` | Netlify Deploy Preview | Yes | Creates preview deployment, validates build succeeds |
+
 ### Local Development
 
 ```bash

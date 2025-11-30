@@ -366,7 +366,7 @@ export default function ExperienceForm({
       <div className={styles.section}>
         <h2>Organizations/Teams (Optional)</h2>
         <p className={styles.sectionDesc}>
-          Teams or departments you worked with
+          Teams or departments you were a part of.
         </p>
 
         <div className={styles.tagsInput}>
@@ -696,7 +696,7 @@ export default function ExperienceForm({
         contextData={getCurrentExperienceData()}
         contextLabel="Experience Form Data"
         collection="experiences"
-        roleType={watch('roleTypes')?.[0]}
+        roleType={watch("roleTypes")?.[0]}
       />
     </form>
   );

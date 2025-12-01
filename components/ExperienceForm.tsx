@@ -2,7 +2,15 @@
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import Select from "react-select";
+import CreatableSelect from "react-select/creatable";
 import type { Experience, RoleType } from "@/lib/types";
+import {
+  GROUPED_ORGANIZATION_OPTIONS,
+  SelectOption,
+  stringsToOptions,
+  optionsToStrings,
+} from "@/lib/constants";
 import AIChatPanel from "./AIChatPanel";
 import Button from "./Button";
 import styles from "./ExperienceForm.module.css";
@@ -24,10 +32,9 @@ export default function ExperienceForm({
     initialData?.technologies || []
   );
   const [newTech, setNewTech] = useState("");
-  const [organizations, setOrganizations] = useState<string[]>(
-    initialData?.organizations || []
+  const [selectedOrganizations, setSelectedOrganizations] = useState<SelectOption[]>(
+    stringsToOptions(initialData?.organizations || [])
   );
-  const [newOrg, setNewOrg] = useState("");
   const [responsibilities, setResponsibilities] = useState<string[]>(
     initialData?.responsibilities || []
   );
@@ -37,10 +44,9 @@ export default function ExperienceForm({
   const [achievements, setAchievements] = useState(
     initialData?.achievements || []
   );
-  const [crossFunctional, setCrossFunctional] = useState<string[]>(
-    initialData?.crossFunctional || []
+  const [selectedCrossFunctional, setSelectedCrossFunctional] = useState<SelectOption[]>(
+    stringsToOptions(initialData?.crossFunctional || [])
   );
-  const [newCrossFunctional, setNewCrossFunctional] = useState("");
   const [showAIPanel, setShowAIPanel] = useState(false);
 
   const {
@@ -69,6 +75,9 @@ export default function ExperienceForm({
   const onFormSubmit = async (data: any) => {
     setError("");
     setIsSubmitting(true);
+
+    const organizations = optionsToStrings(selectedOrganizations);
+    const crossFunctional = optionsToStrings(selectedCrossFunctional);
 
     try {
       const experienceData: Partial<Experience> = {
@@ -108,16 +117,6 @@ export default function ExperienceForm({
     setTechnologies(technologies.filter((t) => t !== tech));
   };
 
-  const addOrganization = () => {
-    if (newOrg.trim() && !organizations.includes(newOrg.trim())) {
-      setOrganizations([...organizations, newOrg.trim()]);
-      setNewOrg("");
-    }
-  };
-
-  const removeOrganization = (org: string) => {
-    setOrganizations(organizations.filter((o) => o !== org));
-  };
 
   const addResponsibility = () => {
     if (newResp.trim()) {
@@ -171,30 +170,75 @@ export default function ExperienceForm({
     setAchievements(achievements.filter((_, i) => i !== index));
   };
 
-  const addCrossFunctional = () => {
-    if (
-      newCrossFunctional.trim() &&
-      !crossFunctional.includes(newCrossFunctional.trim())
-    ) {
-      setCrossFunctional([...crossFunctional, newCrossFunctional.trim()]);
-      setNewCrossFunctional("");
-    }
-  };
-
-  const removeCrossFunctional = (item: string) => {
-    setCrossFunctional(crossFunctional.filter((cf) => cf !== item));
-  };
 
   const getCurrentExperienceData = () => {
     const formData = watch();
     return {
       ...formData,
       technologies,
-      organizations,
+      organizations: optionsToStrings(selectedOrganizations),
       responsibilities,
       achievements,
-      crossFunctional,
+      crossFunctional: optionsToStrings(selectedCrossFunctional),
     };
+  };
+
+  // Custom styles for react-select to match form theme
+  const selectStyles = {
+    control: (base: any, state: any) => ({
+      ...base,
+      borderWidth: "2px",
+      borderColor: state.isFocused ? "#667eea" : "#e2e8f0",
+      borderRadius: "0.5rem",
+      padding: "0.25rem",
+      boxShadow: "none",
+      "&:hover": {
+        borderColor: state.isFocused ? "#667eea" : "#cbd5e1",
+      },
+    }),
+    multiValue: (base: any) => ({
+      ...base,
+      backgroundColor: "#e0e7ff",
+      borderRadius: "0.375rem",
+    }),
+    multiValueLabel: (base: any) => ({
+      ...base,
+      color: "#4f46e5",
+      fontWeight: 600,
+      fontSize: "0.875rem",
+    }),
+    multiValueRemove: (base: any) => ({
+      ...base,
+      color: "#4f46e5",
+      "&:hover": {
+        backgroundColor: "#c7d2fe",
+        color: "#3730a3",
+      },
+    }),
+    option: (base: any, state: any) => ({
+      ...base,
+      backgroundColor: state.isSelected
+        ? "#667eea"
+        : state.isFocused
+        ? "#e0e7ff"
+        : "white",
+      color: state.isSelected ? "white" : "#1e293b",
+      "&:active": {
+        backgroundColor: "#667eea",
+      },
+    }),
+    groupHeading: (base: any) => ({
+      ...base,
+      color: "#64748b",
+      fontWeight: 700,
+      fontSize: "0.75rem",
+      textTransform: "uppercase",
+      letterSpacing: "0.05em",
+    }),
+    placeholder: (base: any) => ({
+      ...base,
+      color: "#94a3b8",
+    }),
   };
 
   return (
@@ -366,43 +410,23 @@ export default function ExperienceForm({
       <div className={styles.section}>
         <h2>Organizations/Teams (Optional)</h2>
         <p className={styles.sectionDesc}>
-          Teams or departments you worked with
+          Teams or departments you were a part of.
         </p>
 
-        <div className={styles.tagsInput}>
-          <input
-            type="text"
-            value={newOrg}
-            onChange={(e) => setNewOrg(e.target.value)}
-            onKeyPress={(e) =>
-              e.key === "Enter" && (e.preventDefault(), addOrganization())
-            }
-            placeholder="Add organization (press Enter)"
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={addOrganization}
-            disabled={isSubmitting}
-          >
-            Add
-          </button>
-        </div>
-
-        <div className={styles.tags}>
-          {organizations.map((org, idx) => (
-            <span key={idx} className={styles.tag}>
-              {org}
-              <button
-                type="button"
-                onClick={() => removeOrganization(org)}
-                disabled={isSubmitting}
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
+        <CreatableSelect
+          isMulti
+          options={GROUPED_ORGANIZATION_OPTIONS}
+          value={selectedOrganizations}
+          onChange={(newValue) =>
+            setSelectedOrganizations(newValue as SelectOption[])
+          }
+          placeholder="Search or type to add teams..."
+          styles={selectStyles}
+          isDisabled={isSubmitting}
+          isClearable
+          formatCreateLabel={(inputValue) => `Add "${inputValue}"`}
+          noOptionsMessage={() => "Type to add a custom team"}
+        />
       </div>
 
       {/* Responsibilities */}
@@ -605,40 +629,20 @@ export default function ExperienceForm({
           Teams or departments you collaborated with
         </p>
 
-        <div className={styles.tagsInput}>
-          <input
-            type="text"
-            value={newCrossFunctional}
-            onChange={(e) => setNewCrossFunctional(e.target.value)}
-            onKeyPress={(e) =>
-              e.key === "Enter" && (e.preventDefault(), addCrossFunctional())
-            }
-            placeholder="Add team/department (press Enter)"
-            disabled={isSubmitting}
-          />
-          <button
-            type="button"
-            onClick={addCrossFunctional}
-            disabled={isSubmitting}
-          >
-            Add
-          </button>
-        </div>
-
-        <div className={styles.tags}>
-          {crossFunctional.map((cf, idx) => (
-            <span key={idx} className={styles.tag}>
-              {cf}
-              <button
-                type="button"
-                onClick={() => removeCrossFunctional(cf)}
-                disabled={isSubmitting}
-              >
-                ×
-              </button>
-            </span>
-          ))}
-        </div>
+        <CreatableSelect
+          isMulti
+          options={GROUPED_ORGANIZATION_OPTIONS}
+          value={selectedCrossFunctional}
+          onChange={(newValue) =>
+            setSelectedCrossFunctional(newValue as SelectOption[])
+          }
+          placeholder="Search or type to add collaborating teams..."
+          styles={selectStyles}
+          isDisabled={isSubmitting}
+          isClearable
+          formatCreateLabel={(inputValue) => `Add "${inputValue}"`}
+          noOptionsMessage={() => "Type to add a custom team"}
+        />
       </div>
 
       {/* Form Actions */}
@@ -696,7 +700,7 @@ export default function ExperienceForm({
         contextData={getCurrentExperienceData()}
         contextLabel="Experience Form Data"
         collection="experiences"
-        roleType={watch('roleTypes')?.[0]}
+        roleType={watch("roleTypes")?.[0]}
       />
     </form>
   );

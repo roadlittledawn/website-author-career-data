@@ -6,6 +6,16 @@
 [functions]
   node_bundler = "esbuild"
 
+# Increase timeout for job-agent functions (requires Pro plan or higher)
+[functions."job-agent-resume"]
+  timeout = 60
+
+[functions."job-agent-cover-letter"]
+  timeout = 60
+
+[functions."job-agent-question"]
+  timeout = 60
+
 # Next.js plugin for Netlify
 [[plugins]]
   package = "@netlify/plugin-nextjs"

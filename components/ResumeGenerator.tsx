@@ -32,6 +32,10 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
   const generateResume = async (action: 'generate' | 'revise' = 'generate') => {
     setIsGenerating(true);
     try {
+      // Create abort controller with 90 second timeout
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 90000);
+
       const response = await fetch('/.netlify/functions/job-agent-resume', {
         method: 'POST',
         headers: {
@@ -42,8 +46,11 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
           jobInfo,
           additionalContext: action === 'generate' ? additionalContext : feedback,
           action
-        })
+        }),
+        signal: controller.signal
       });
+
+      clearTimeout(timeoutId);
 
       if (!response.ok) {
         throw new Error('Failed to generate resume');
@@ -62,7 +69,11 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
       setFeedback('');
     } catch (error) {
       console.error('Resume generation error:', error);
-      alert('Failed to generate resume. Please try again.');
+      if (error instanceof Error && error.name === 'AbortError') {
+        alert('Request timed out after 90 seconds. The resume generation is taking longer than expected. Please try again or contact support.');
+      } else {
+        alert('Failed to generate resume. Please try again.');
+      }
     } finally {
       setIsGenerating(false);
     }

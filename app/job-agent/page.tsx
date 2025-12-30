@@ -3,6 +3,9 @@
 import { useState } from 'react';
 import JobInfoForm from '../../components/JobInfoForm';
 import ResumeGenerator from '../../components/ResumeGenerator';
+import CoverLetterGenerator from '../../components/CoverLetterGenerator';
+import ApplicationQuestionsAssistant from '../../components/ApplicationQuestionsAssistant';
+import ApplicationSummary from '../../components/ApplicationSummary';
 import styles from './job-agent.module.css';
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
@@ -71,11 +74,68 @@ export default function JobAgentPage() {
     }));
   };
 
+  const handleCoverLetterFinalize = (finalizedCoverLetter: string) => {
+    setState(prev => ({
+      ...prev,
+      coverLetter: {
+        ...prev.coverLetter,
+        finalized: finalizedCoverLetter
+      },
+      currentStep: 'questions'
+    }));
+  };
+
+  const handleQuestionsComplete = (completedQuestions: Array<{ question: string; response: string; iterations: string[] }>) => {
+    setState(prev => ({
+      ...prev,
+      questions: completedQuestions,
+      currentStep: 'summary'
+    }));
+  };
+
   const handleBackToJobInfo = () => {
     setState(prev => ({
       ...prev,
       currentStep: 'job-info'
     }));
+  };
+
+  const handleBackToResume = () => {
+    setState(prev => ({
+      ...prev,
+      currentStep: 'resume'
+    }));
+  };
+
+  const handleBackToCoverLetter = () => {
+    setState(prev => ({
+      ...prev,
+      currentStep: 'cover-letter'
+    }));
+  };
+
+  const handleBackToQuestions = () => {
+    setState(prev => ({
+      ...prev,
+      currentStep: 'questions'
+    }));
+  };
+
+  const handleStartNew = () => {
+    setState({
+      currentStep: 'job-info',
+      jobInfo: {
+        description: '',
+        jobType: 'technical-writer'
+      },
+      resume: {
+        iterations: []
+      },
+      coverLetter: {
+        iterations: []
+      },
+      questions: []
+    });
   };
 
   return (
@@ -108,20 +168,35 @@ export default function JobAgentPage() {
           />
         )}
         {state.currentStep === 'resume' && (
-          <ResumeGenerator 
+          <ResumeGenerator
             jobInfo={state.jobInfo}
             onFinalize={handleResumeFinalize}
             onBack={handleBackToJobInfo}
           />
         )}
         {state.currentStep === 'cover-letter' && (
-          <div>Cover Letter Generator - Coming Soon</div>
+          <CoverLetterGenerator
+            jobInfo={state.jobInfo}
+            onFinalize={handleCoverLetterFinalize}
+            onBack={handleBackToResume}
+          />
         )}
         {state.currentStep === 'questions' && (
-          <div>Application Questions - Coming Soon</div>
+          <ApplicationQuestionsAssistant
+            jobInfo={state.jobInfo}
+            onComplete={handleQuestionsComplete}
+            onBack={handleBackToCoverLetter}
+          />
         )}
         {state.currentStep === 'summary' && (
-          <div>Summary - Coming Soon</div>
+          <ApplicationSummary
+            jobInfo={state.jobInfo}
+            resume={state.resume}
+            coverLetter={state.coverLetter}
+            questions={state.questions}
+            onBack={handleBackToQuestions}
+            onStartNew={handleStartNew}
+          />
         )}
       </div>
     </div>

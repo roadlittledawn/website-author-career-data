@@ -15,7 +15,7 @@ async function connectToDatabase() {
 
   const client = new MongoClient(process.env.MONGODB_URI);
   await client.connect();
-  cachedDb = client.db(process.env.MONGODB_DB_NAME);
+  cachedDb = client.db('career-data');
   return cachedDb;
 }
 
@@ -69,8 +69,11 @@ exports.handler = async (event, context) => {
     }
 
     // Connect to database and fetch career data
+    console.log('Connecting to database...');
+    const dbStart = Date.now();
     const db = await connectToDatabase();
     const careerData = await fetchCareerData(db, jobInfo.jobType);
+    console.log(`Database fetch completed in ${Date.now() - dbStart}ms`);
 
     // Build system prompt for resume generation
     const systemPrompt = buildResumeSystemPrompt(
@@ -78,13 +81,22 @@ exports.handler = async (event, context) => {
       careerData,
       additionalContext
     );
+    console.log(`System prompt length: ${systemPrompt.length} characters`);
 
-    // Generate resume using Claude
+    // Generate resume using Claude with prompt caching
+    console.log('Calling Anthropic API...');
+    const apiStart = Date.now();
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-5-20250929",
       max_tokens: 4000,
       temperature: 0.3,
-      system: systemPrompt,
+      system: [
+        {
+          type: "text",
+          text: systemPrompt,
+          cache_control: { type: "ephemeral" }
+        }
+      ],
       messages: [
         {
           role: "user",
@@ -95,6 +107,8 @@ exports.handler = async (event, context) => {
         },
       ],
     });
+    console.log(`Anthropic API completed in ${Date.now() - apiStart}ms`);
+    console.log(`Token usage:`, response.usage);
 
     return {
       statusCode: 200,
@@ -215,49 +229,31 @@ Positioning: ${profile.positioning?.current || "N/A"}
     : "No profile data available"
 }
 
-### Work Experiences
+### Work Experiences (${experiences.length} total)
 ${experiences
+  .slice(0, 10) // Limit to 10 most recent
   .map(
     (exp) => `
-**${exp.company}** - ${exp.title} (${exp.startDate} - ${
-      exp.endDate || "Present"
-    })
-Location: ${exp.location}
-Technologies: ${exp.technologies?.join(", ") || "N/A"}
-Bullet Points:
-${exp.bulletPoints?.map((bp) => `- ${bp}`).join("\n") || "No bullet points"}
-Achievements:
-${
-  exp.achievements
-    ?.map((ach) => `- ${ach.description} (Impact: ${ach.impact})`)
-    .join("\n") || "No achievements"
-}
-`
+**${exp.company}** | ${exp.title} | ${exp.startDate} - ${exp.endDate || "Present"}
+Tech: ${exp.technologies?.slice(0, 10).join(", ") || "N/A"}
+${(exp.bulletPoints || []).slice(0, 4).map((bp) => `• ${bp}`).join("\n")}${
+  exp.achievements?.slice(0, 2).length ? "\n" + exp.achievements.slice(0, 2).map((ach) => `• ${ach.description}`).join("\n") : ""
+}`
   )
-  .join("\n")}
+  .join("\n\n")}
 
-### Skills
-${skills
-  .map(
-    (skillCat) => `
-**${skillCat.category}**
-${skillCat.skills?.map((skill) => skill.name).join(", ") || "No skills"}
-`
-  )
-  .join("\n")}
+### Skills (${skills.length} total - showing top 50)
+${skills.slice(0, 50).map((skill) => skill.name).join(" • ")}
 
-### Projects
+### Projects (${projects.length} total - showing top 8)
 ${projects
+  .slice(0, 8)
   .map(
-    (proj) => `
-**${proj.name}** (${proj.type})
-Overview: ${proj.overview}
-Challenge: ${proj.challenge}
-Outcome: ${proj.outcome}
-Technologies: ${proj.technologies?.join(", ") || "N/A"}
-`
+    (proj) => `**${proj.name}** | ${proj.type}
+${proj.overview}
+Tech: ${proj.technologies?.slice(0, 8).join(", ") || "N/A"}`
   )
-  .join("\n")}
+  .join("\n\n")}
 
 ${
   additionalContext

@@ -142,7 +142,7 @@ export default function JobInfoForm({ onSubmit, initialData }: JobInfoFormProps)
         />
         {url && !description && !isLoading && (
           <div className={styles.helpText}>
-            If the URL doesn't work, you can paste the job description manually here.
+            If the URL doesn&apos;t work, you can paste the job description manually here.
           </div>
         )}
       </div>

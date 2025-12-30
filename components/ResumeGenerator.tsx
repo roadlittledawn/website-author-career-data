@@ -130,14 +130,14 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
           <div className={styles.prompt}>
             <h3>Additional Context</h3>
             <p>
-              I've analyzed your career data and the job requirements. Before I create your tailored resume, 
-              are there any specific skills, experiences, projects, or achievements you'd like me to highlight 
+              I&apos;ve analyzed your career data and the job requirements. Before I create your tailored resume,
+              are there any specific skills, experiences, projects, or achievements you&apos;d like me to highlight
               that might not be prominently featured? For example:
             </p>
             <ul>
-              <li>Technical skills or tools you've used that match the job requirements</li>
+              <li>Technical skills or tools you&apos;ve used that match the job requirements</li>
               <li>Relevant projects or accomplishments from recent work</li>
-              <li>Certifications or training you've completed</li>
+              <li>Certifications or training you&apos;ve completed</li>
               <li>Specific types of work that align with this role</li>
               <li>Cross-functional collaboration experiences</li>
               <li>Any quantifiable achievements that align with this position</li>

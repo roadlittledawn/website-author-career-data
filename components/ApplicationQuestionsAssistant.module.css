@@ -1,0 +1,414 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.backButton {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+.backButton:hover {
+  background: #e5e5e5;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.addQuestionSection {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.addQuestionSection h3 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+}
+
+.addQuestionSection p {
+  margin-bottom: 1rem;
+  color: #666;
+}
+
+.questionInput {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.textarea {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  resize: vertical;
+}
+
+.addButton {
+  padding: 0.75rem 1.5rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.addButton:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.addButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.questionsList {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.questionsList h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.questionsNav {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.questionTab {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.questionTab:hover {
+  background: #e5e5e5;
+}
+
+.questionTab.active {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.questionTab.approved {
+  background: #28a745;
+  color: white;
+  border-color: #28a745;
+}
+
+.questionTab.approved.active {
+  background: #218838;
+  border-color: #218838;
+}
+
+.workspace {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #e5e5e5;
+}
+
+.questionDisplay {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.questionDisplay h4 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.questionText {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #444;
+  margin: 0;
+}
+
+.generateSection {
+  text-align: center;
+  padding: 3rem 2rem;
+}
+
+.generateSection p {
+  margin-bottom: 1.5rem;
+  color: #666;
+}
+
+.generateButton {
+  padding: 1rem 2rem;
+  background: #0066cc;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+
+.generateButton:hover:not(:disabled) {
+  background: #0052a3;
+}
+
+.generateButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.answerSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.answerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.answerHeader h4 {
+  margin: 0;
+}
+
+.controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.viewButton,
+.editButton,
+.copyButton {
+  padding: 0.5rem 1rem;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.viewButton:hover,
+.editButton:hover,
+.copyButton:hover {
+  background: #e5e5e5;
+}
+
+.viewButton.active,
+.editButton.active {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.answerDisplay {
+  min-height: 200px;
+  padding: 1.5rem;
+  background: #f9f9f9;
+  border: 1px solid #e5e5e5;
+  border-radius: 4px;
+}
+
+.answerEditor {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.9rem;
+  resize: vertical;
+  min-height: 300px;
+}
+
+.renderedContent {
+  line-height: 1.8;
+  color: #333;
+}
+
+.renderedContent h1,
+.renderedContent h2,
+.renderedContent h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.renderedContent p {
+  margin-bottom: 1rem;
+}
+
+.renderedContent ul,
+.renderedContent ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.plainContent {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: inherit;
+  font-size: 0.95rem;
+  margin: 0;
+  line-height: 1.8;
+}
+
+.feedbackSection {
+  background: #f9f9f9;
+  padding: 1.5rem;
+  border-radius: 4px;
+  border: 1px solid #e5e5e5;
+}
+
+.feedbackSection h4 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.reviseButton {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: #ffc107;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.reviseButton:hover:not(:disabled) {
+  background: #e0a800;
+}
+
+.reviseButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.approveButton {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.95rem;
+  transition: background 0.2s;
+}
+
+.approveButton:hover {
+  background: #218838;
+}
+
+.approvedBanner {
+  padding: 1rem;
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 500;
+}
+
+.iterations {
+  padding-top: 1rem;
+  border-top: 1px solid #e5e5e5;
+}
+
+.iterations h4 {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.iterationList {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.iterationButton {
+  padding: 0.4rem 0.8rem;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: background 0.2s;
+}
+
+.iterationButton:hover {
+  background: #e5e5e5;
+}
+
+.iterationButton.active {
+  background: #0066cc;
+  color: white;
+  border-color: #0066cc;
+}
+
+.completeSection {
+  text-align: center;
+  padding: 2rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  border: 2px solid #28a745;
+}
+
+.completeButton {
+  padding: 1rem 2.5rem;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1.1rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.completeButton:hover {
+  background: #218838;
+}

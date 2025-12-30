@@ -141,30 +141,18 @@ async function fetchCareerData(db, jobType) {
       projects: projects.length
     });
 
-    // Filter in memory for now to debug
-    const filteredExperiences = experiences.filter(exp => 
-      exp.featured && exp.roleTypes && exp.roleTypes.some(role => jobTypeConfig.roleTypes.includes(role))
-    );
-
-    const filteredSkills = skills.filter(skill =>
-      skill.roleRelevance && skill.roleRelevance.some(role => jobTypeConfig.skillRelevance.includes(role))
-    );
-
-    const filteredProjects = projects.filter(proj =>
-      proj.featured && proj.roleTypes && proj.roleTypes.some(role => jobTypeConfig.roleTypes.includes(role))
-    ).slice(0, 3);
-
-    console.log('Filtered data counts:', {
-      experiences: filteredExperiences.length,
-      skills: filteredSkills.length,
-      projects: filteredProjects.length
+    // Return all data for LLM to have maximum context for tailoring
+    console.log('Returning all career data (no filtering):', {
+      experiences: experiences.length,
+      skills: skills.length,
+      projects: projects.length
     });
 
-    return { 
-      profile, 
-      experiences: filteredExperiences, 
-      skills: filteredSkills, 
-      projects: filteredProjects 
+    return {
+      profile,
+      experiences: experiences,
+      skills: skills,
+      projects: projects
     };
   } catch (error) {
     console.error("Database query error:", error);

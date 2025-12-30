@@ -40,6 +40,12 @@ export default function DashboardPage() {
             <p>Manage academic background</p>
           </div>
         </a>
+        <a href="/job-agent">
+          <div className="dashboard-card">
+            <h2>Job Application Agent</h2>
+            <p>Create tailored resumes and cover letters</p>
+          </div>
+        </a>
       </div>
     </main>
   );

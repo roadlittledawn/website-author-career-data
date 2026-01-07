@@ -218,6 +218,36 @@ GUIDELINES:
       prompt += `- Project: ${currentItem.name}\n`;
       prompt += `- Type: ${currentItem.type}\n`;
       prompt += `- Technologies: ${currentItem.technologies?.join(', ') || 'N/A'}\n`;
+      if (currentItem.date) {
+        prompt += `- Date: ${new Date(currentItem.date).toLocaleDateString()}\n`;
+      }
+      if (currentItem.featured) {
+        prompt += `- Featured Project: Yes\n`;
+      }
+      if (currentItem.roleTypes?.length) {
+        prompt += `- Target Roles: ${currentItem.roleTypes.join(', ')}\n`;
+      }
+      if (currentItem.keywords?.length) {
+        prompt += `- Keywords: ${currentItem.keywords.join(', ')}\n`;
+      }
+      if (currentItem.links?.length) {
+        prompt += `- Links: ${currentItem.links.map(l => `${l.type} (${l.linkText || l.url})`).join(', ')}\n`;
+      }
+      if (currentItem.overview) {
+        prompt += `- Overview: ${currentItem.overview}\n`;
+      }
+      if (currentItem.challenge) {
+        prompt += `- Challenge: ${currentItem.challenge}\n`;
+      }
+      if (currentItem.approach) {
+        prompt += `- Approach: ${currentItem.approach}\n`;
+      }
+      if (currentItem.outcome) {
+        prompt += `- Outcome: ${currentItem.outcome}\n`;
+      }
+      if (currentItem.impact) {
+        prompt += `- Impact: ${currentItem.impact}\n`;
+      }
     }
   }
 

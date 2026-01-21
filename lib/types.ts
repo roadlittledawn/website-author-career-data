@@ -1,149 +1,108 @@
 /**
  * TypeScript type definitions for Career Data models
- * Based on MongoDB schema from REQUIREMENTS.md
+ * Based on GraphQL schema from api-career-data
  */
 
-// Role types used across collections
-export type RoleType =
-  | 'technical_writer'
-  | 'technical_writing_manager'
-  | 'software_engineer'
-  | 'engineering_manager';
-
-// Proficiency levels for skills
-export type ProficiencyLevel = 'expert' | 'advanced' | 'intermediate' | 'beginner';
-
-// Project types
-export type ProjectType = 'technical_writing' | 'software_engineering' | 'leadership' | 'hybrid';
-
-// Profile Collection
-export interface Profile {
-  _id?: string;
-  personalInfo: {
-    name: string;
-    email: string;
-    phone: string;
-    location: string;
-    links: {
-      portfolio?: string;
-      github?: string;
-      linkedin?: string;
-      writingSamples?: string;
-    };
+// Supporting Types
+export interface PersonalInfo {
+  name: string;
+  email: string;
+  phone?: string;
+  location?: string;
+  links?: {
+    portfolio?: string;
+    github?: string;
+    linkedin?: string;
+    writingSamples?: string;
   };
-  positioning: {
-    current: string;
-    byRole: {
-      technical_writer?: string;
-      technical_writing_manager?: string;
-      software_engineer?: string;
-      engineering_manager?: string;
-    };
-  };
-  valuePropositions: string[];
-  professionalMission?: string;
-  uniqueSellingPoints: string[];
-  lastUpdated: Date;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
-// Experiences Collection
+export interface Positioning {
+  headline: string;
+  summary: string;
+  targetRoles: string[];
+  targetIndustries: string[];
+}
+
+export interface Achievement {
+  description: string;
+  metrics?: string;
+  impact?: string;
+}
+
+// Entity Types
+export interface Profile {
+  id: string;
+  personalInfo: PersonalInfo;
+  positioning: Positioning;
+  valuePropositions: string[];
+  professionalMission: string;
+  uniqueSellingPoints: string[];
+  updatedAt: string;
+}
+
 export interface Experience {
-  _id?: string;
+  id: string;
   company: string;
   location: string;
   title: string;
   industry?: string;
-  startDate: Date;
-  endDate?: Date | null;
-  organizations?: string[];
-  roleTypes: RoleType[];
+  startDate: string;
+  endDate?: string;
+  roleTypes: string[];
   responsibilities: string[];
-  achievements?: Array<{
-    description: string;
-    impact?: string;
-    keywords?: string[];
-  }>;
+  achievements: Achievement[];
   technologies: string[];
-  crossFunctional?: string[];
-  displayOrder?: number;
-  featured?: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  featured: boolean;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Skills Collection (Flat Structure)
 export interface Skill {
-  _id?: string;
+  id: string;
   name: string;
-  roleRelevance: string[];
-  level: string; // e.g., "Beginner", "Intermediate", "Advanced", "Expert"
-  rating: number; // 1-5
+  roleRelevance: string;
+  level: string;
+  rating: number;
   yearsOfExperience: number;
   tags: string[];
-  iconName?: string;
   keywords: string[];
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Legacy: Old nested structure (deprecated)
-export interface LegacySkillItem {
-  name: string;
-  proficiency?: ProficiencyLevel;
-  yearsUsed?: number;
-  lastUsed?: Date;
-  keywords?: string[];
-  featured?: boolean;
-}
-
-export interface SkillCategory {
-  _id?: string;
-  category: string;
-  roleRelevance: RoleType[];
-  skills: LegacySkillItem[];
-  displayOrder?: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// Projects Collection
 export interface Project {
-  _id?: string;
+  id: string;
   name: string;
-  type: ProjectType;
-  date?: Date;
-  featured?: boolean;
+  type: string;
+  date?: string;
+  featured: boolean;
   overview: string;
   challenge?: string;
   approach?: string;
   outcome?: string;
   impact?: string;
   technologies: string[];
-  keywords?: string[];
-  links?: Array<{
-    url: string;
-    linkText: string;
-    type: 'github' | 'demo' | 'writing_sample' | 'other';
-  }>;
-  roleTypes: RoleType[];
-  createdAt: Date;
-  updatedAt: Date;
+  keywords: string[];
+  roleTypes: string[];
+  createdAt: string;
+  updatedAt: string;
 }
 
-// Education Collection
 export interface Education {
-  _id?: string;
+  id: string;
   institution: string;
   degree: string;
   field: string;
   graduationYear: number;
-  relevantCoursework?: string[];
-  displayOrder?: number;
-  createdAt: Date;
-  updatedAt: Date;
+  relevantCoursework: string[];
+  createdAt: string;
+  updatedAt: string;
 }
+
+// Legacy types for compatibility
+export type RoleType = string;
+export type ProjectType = string;
 
 // Keywords Collection
 export interface KeywordTerm {

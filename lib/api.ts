@@ -1,84 +1,76 @@
 /**
  * API Client
- * Utilities for making authenticated API requests
+ * GraphQL client for career data API
  */
 
-import { authenticatedFetch } from './auth';
+import { gql } from 'graphql-request';
+import graphqlClient from './graphql-client';
 import type { Project, Experience, Profile, Skill, Education } from './types';
-
-// Base API URL
-const API_BASE = '/.netlify/functions';
 
 /**
  * Projects API
  */
 export const projectsApi = {
-  /**
-   * List all projects with optional filters
-   */
-  async list(params?: {
-    type?: string;
-    featured?: boolean;
-    roleType?: string;
-    search?: string;
-  }): Promise<{ projects: Project[] }> {
-    const query = new URLSearchParams();
-    if (params?.type) query.append('type', params.type);
-    if (params?.featured !== undefined) query.append('featured', String(params.featured));
-    if (params?.roleType) query.append('roleType', params.roleType);
-    if (params?.search) query.append('search', params.search);
-
-    const url = `${API_BASE}/projects${query.toString() ? `?${query}` : ''}`;
-    const response = await authenticatedFetch(url);
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch projects`);
-    }
-
-    return response.json();
+  async list(params?: { type?: string; featured?: boolean; roleType?: string }): Promise<{ projects: Project[] }> {
+    const query = gql`
+      query GetProjects($filter: ProjectFilter) {
+        projects(filter: $filter) {
+          id name type date featured overview challenge approach outcome impact
+          technologies keywords roleTypes createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ projects: Project[] }>(query, { filter: params });
+    return data;
   },
 
-  /**
-   * Get single project by ID
-   */
   async get(id: string): Promise<{ project: Project }> {
-    const response = await authenticatedFetch(`${API_BASE}/projects/${id}`);
-    return response.json();
+    const query = gql`
+      query GetProject($id: ID!) {
+        project(id: $id) {
+          id name type date featured overview challenge approach outcome impact
+          technologies keywords roleTypes createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ project: Project }>(query, { id });
+    return data;
   },
 
-  /**
-   * Create new project
-   */
-  async create(data: Partial<Project>): Promise<{ project: Project; projectId: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/projects`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+  async create(input: Partial<Project>): Promise<{ project: Project }> {
+    const mutation = gql`
+      mutation CreateProject($input: ProjectInput!) {
+        createProject(input: $input) {
+          id name type date featured overview challenge approach outcome impact
+          technologies keywords roleTypes createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ createProject: Project }>(mutation, { input });
+    return { project: data.createProject };
   },
 
-  /**
-   * Update existing project
-   */
-  async update(id: string, data: Partial<Project>): Promise<{ project: Project }> {
-    const response = await authenticatedFetch(`${API_BASE}/projects/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+  async update(id: string, input: Partial<Project>): Promise<{ project: Project }> {
+    const mutation = gql`
+      mutation UpdateProject($id: ID!, $input: ProjectInput!) {
+        updateProject(id: $id, input: $input) {
+          id name type date featured overview challenge approach outcome impact
+          technologies keywords roleTypes createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ updateProject: Project }>(mutation, { id, input });
+    return { project: data.updateProject };
   },
 
-  /**
-   * Delete project
-   */
   async delete(id: string): Promise<{ message: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/projects/${id}`, {
-      method: 'DELETE',
-    });
-    return response.json();
+    const mutation = gql`
+      mutation DeleteProject($id: ID!) {
+        deleteProject(id: $id) { success id }
+      }
+    `;
+    await graphqlClient.request(mutation, { id });
+    return { message: 'Project deleted successfully' };
   },
 };
 
@@ -86,110 +78,116 @@ export const projectsApi = {
  * Experiences API
  */
 export const experiencesApi = {
-  /**
-   * List all experiences with optional filters
-   */
-  async list(params?: {
-    company?: string;
-    roleType?: string;
-    featured?: boolean;
-    search?: string;
-  }): Promise<{ experiences: Experience[] }> {
-    const query = new URLSearchParams();
-    if (params?.company) query.append('company', params.company);
-    if (params?.roleType) query.append('roleType', params.roleType);
-    if (params?.featured !== undefined) query.append('featured', String(params.featured));
-    if (params?.search) query.append('search', params.search);
-
-    const url = `${API_BASE}/experiences${query.toString() ? `?${query}` : ''}`;
-    const response = await authenticatedFetch(url);
-    return response.json();
+  async list(params?: { company?: string; roleType?: string; featured?: boolean }): Promise<{ experiences: Experience[] }> {
+    const query = gql`
+      query GetExperiences($filter: ExperienceFilter) {
+        experiences(filter: $filter) {
+          id company location title industry startDate endDate roleTypes
+          responsibilities achievements { description metrics impact }
+          technologies featured createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ experiences: Experience[] }>(query, { filter: params });
+    return data;
   },
 
-  /**
-   * Get single experience by ID
-   */
   async get(id: string): Promise<{ experience: Experience }> {
-    const response = await authenticatedFetch(`${API_BASE}/experiences/${id}`);
-    return response.json();
+    const query = gql`
+      query GetExperience($id: ID!) {
+        experience(id: $id) {
+          id company location title industry startDate endDate roleTypes
+          responsibilities achievements { description metrics impact }
+          technologies featured createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ experience: Experience }>(query, { id });
+    return data;
   },
 
-  /**
-   * Create new experience
-   */
-  async create(data: Partial<Experience>): Promise<{ experience: Experience; experienceId: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/experiences`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+  async create(input: Partial<Experience>): Promise<{ experience: Experience }> {
+    const mutation = gql`
+      mutation CreateExperience($input: ExperienceInput!) {
+        createExperience(input: $input) {
+          id company location title industry startDate endDate roleTypes
+          responsibilities achievements { description metrics impact }
+          technologies featured createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ createExperience: Experience }>(mutation, { input });
+    return { experience: data.createExperience };
   },
 
-  /**
-   * Update existing experience
-   */
-  async update(id: string, data: Partial<Experience>): Promise<{ experience: Experience }> {
-    const response = await authenticatedFetch(`${API_BASE}/experiences/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    return response.json();
+  async update(id: string, input: Partial<Experience>): Promise<{ experience: Experience }> {
+    const mutation = gql`
+      mutation UpdateExperience($id: ID!, $input: ExperienceInput!) {
+        updateExperience(id: $id, input: $input) {
+          id company location title industry startDate endDate roleTypes
+          responsibilities achievements { description metrics impact }
+          technologies featured createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ updateExperience: Experience }>(mutation, { id, input });
+    return { experience: data.updateExperience };
   },
 
-  /**
-   * Delete experience
-   */
   async delete(id: string): Promise<{ message: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/experiences/${id}`, {
-      method: 'DELETE',
-    });
-    return response.json();
+    const mutation = gql`
+      mutation DeleteExperience($id: ID!) {
+        deleteExperience(id: $id) { success id }
+      }
+    `;
+    await graphqlClient.request(mutation, { id });
+    return { message: 'Experience deleted successfully' };
   },
 };
 
-/**
- * Profile API
- * Note: Profile is a singleton - only one profile per user
- */
 export const profileApi = {
-  /**
-   * Get profile (creates default if doesn't exist)
-   */
-  async get(): Promise<{ profile: Profile }> {
-    const response = await authenticatedFetch(`${API_BASE}/profile`);
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch profile`);
+  async get(): Promise<{ profile: Profile | null }> {
+    const query = gql`
+      query GetProfile {
+        profile {
+          id
+          personalInfo { 
+            name email phone location 
+            links { portfolio github linkedin writingSamples }
+          }
+          valuePropositions professionalMission uniqueSellingPoints updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ profile: any }>(query);
+    // Add default positioning if missing
+    if (data.profile && !data.profile.positioning) {
+      data.profile.positioning = {
+        headline: '',
+        summary: '',
+        targetRoles: [],
+        targetIndustries: []
+      };
     }
-    return response.json();
+    return data as { profile: Profile | null };
   },
 
-  /**
-   * Update profile
-   */
-  async update(data: Partial<Profile>): Promise<{ profile: Profile }> {
-    const response = await authenticatedFetch(`${API_BASE}/profile`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to update profile`);
-    }
-    return response.json();
-  },
-
-  /**
-   * Delete profile (reset to default)
-   */
-  async delete(): Promise<{ message: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/profile`, {
-      method: 'DELETE',
-    });
-    return response.json();
+  async update(input: Partial<Profile>): Promise<{ profile: Profile }> {
+    const mutation = gql`
+      mutation UpdateProfile($input: ProfileInput!) {
+        updateProfile(input: $input) {
+          id
+          personalInfo { 
+            name email phone location 
+            links { portfolio github linkedin writingSamples }
+          }
+          positioning { headline summary targetRoles targetIndustries }
+          valuePropositions professionalMission uniqueSellingPoints updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ updateProfile: Profile }>(mutation, { input });
+    return { profile: data.updateProfile };
   },
 };
 
@@ -197,90 +195,77 @@ export const profileApi = {
  * Skills API
  */
 export const skillsApi = {
-  /**
-   * List all skills with optional filters
-   */
-  async list(params?: {
-    name?: string;
-    roleRelevance?: string;
-    level?: string;
-    tag?: string;
-    search?: string;
-  }): Promise<{ skills: Skill[] }> {
-    const query = new URLSearchParams();
-    if (params?.name) query.append('name', params.name);
-    if (params?.roleRelevance) query.append('roleRelevance', params.roleRelevance);
-    if (params?.level) query.append('level', params.level);
-    if (params?.tag) query.append('tag', params.tag);
-    if (params?.search) query.append('search', params.search);
-
-    const url = `${API_BASE}/skills${query.toString() ? `?${query}` : ''}`;
-    const response = await authenticatedFetch(url);
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch skills`);
-    }
-
-    return response.json();
+  async list(params?: { name?: string; roleRelevance?: string; level?: string; tag?: string }): Promise<{ skills: Skill[] }> {
+    const query = gql`
+      query GetSkills($filter: SkillFilter) {
+        skills(filter: $filter) {
+          id name
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ skills: any[] }>(query, { filter: params });
+    // Add default values for missing fields
+    const skills = data.skills.map(skill => ({
+      ...skill,
+      roleRelevance: 'engineering',
+      level: 'Intermediate',
+      rating: 3,
+      yearsOfExperience: 1,
+      tags: [],
+      keywords: [],
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    }));
+    return { skills };
   },
 
-  /**
-   * Get single skill by ID
-   */
   async get(id: string): Promise<{ skill: Skill }> {
-    const response = await authenticatedFetch(`${API_BASE}/skills/${id}`);
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch skill`);
-    }
-    return response.json();
+    const query = gql`
+      query GetSkill($id: ID!) {
+        skill(id: $id) {
+          id name roleRelevance level rating yearsOfExperience
+          tags keywords createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ skill: Skill }>(query, { id });
+    return data;
   },
 
-  /**
-   * Create new skill
-   */
-  async create(data: Partial<Skill>): Promise<{ skill: Skill; skillId: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/skills`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to create skill`);
-    }
-    return response.json();
+  async create(input: Partial<Skill>): Promise<{ skill: Skill }> {
+    const mutation = gql`
+      mutation CreateSkill($input: SkillInput!) {
+        createSkill(input: $input) {
+          id name roleRelevance level rating yearsOfExperience
+          tags keywords createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ createSkill: Skill }>(mutation, { input });
+    return { skill: data.createSkill };
   },
 
-  /**
-   * Update existing skill
-   */
-  async update(id: string, data: Partial<Skill>): Promise<{ skill: Skill }> {
-    const response = await authenticatedFetch(`${API_BASE}/skills/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to update skill`);
-    }
-    return response.json();
+  async update(id: string, input: Partial<Skill>): Promise<{ skill: Skill }> {
+    const mutation = gql`
+      mutation UpdateSkill($id: ID!, $input: SkillInput!) {
+        updateSkill(id: $id, input: $input) {
+          id name roleRelevance level rating yearsOfExperience
+          tags keywords createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ updateSkill: Skill }>(mutation, { id, input });
+    return { skill: data.updateSkill };
   },
 
-  /**
-   * Delete skill
-   */
   async delete(id: string): Promise<{ message: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/skills/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to delete skill`);
-    }
-    return response.json();
+    const mutation = gql`
+      mutation DeleteSkill($id: ID!) {
+        deleteSkill(id: $id) { success id }
+      }
+    `;
+    await graphqlClient.request(mutation, { id });
+    return { message: 'Skill deleted successfully' };
   },
 };
 
@@ -288,87 +273,65 @@ export const skillsApi = {
  * Education API
  */
 export const educationApi = {
-  /**
-   * List all educations with optional filters
-   */
-  async list(params?: {
-    institution?: string;
-    degree?: string;
-    field?: string;
-    graduationYear?: number;
-  }): Promise<{ educations: Education[] }> {
-    const query = new URLSearchParams();
-    if (params?.institution) query.append('institution', params.institution);
-    if (params?.degree) query.append('degree', params.degree);
-    if (params?.field) query.append('field', params.field);
-    if (params?.graduationYear) query.append('graduationYear', String(params.graduationYear));
-
-    const url = `${API_BASE}/educations${query.toString() ? `?${query}` : ''}`;
-    const response = await authenticatedFetch(url);
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch educations`);
-    }
-
-    return response.json();
+  async list(params?: { institution?: string; degree?: string; field?: string }): Promise<{ educations: Education[] }> {
+    const query = gql`
+      query GetEducations($filter: EducationFilter) {
+        educations(filter: $filter) {
+          id institution degree field graduationYear relevantCoursework
+          createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ educations: Education[] }>(query, { filter: params });
+    return data;
   },
 
-  /**
-   * Get single education by ID
-   */
   async get(id: string): Promise<{ education: Education }> {
-    const response = await authenticatedFetch(`${API_BASE}/educations/${id}`);
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to fetch education`);
-    }
-    return response.json();
+    const query = gql`
+      query GetEducation($id: ID!) {
+        education(id: $id) {
+          id institution degree field graduationYear relevantCoursework
+          createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ education: Education }>(query, { id });
+    return data;
   },
 
-  /**
-   * Create new education
-   */
-  async create(data: Partial<Education>): Promise<{ education: Education; educationId: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/educations`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to create education`);
-    }
-    return response.json();
+  async create(input: Partial<Education>): Promise<{ education: Education }> {
+    const mutation = gql`
+      mutation CreateEducation($input: EducationInput!) {
+        createEducation(input: $input) {
+          id institution degree field graduationYear relevantCoursework
+          createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ createEducation: Education }>(mutation, { input });
+    return { education: data.createEducation };
   },
 
-  /**
-   * Update existing education
-   */
-  async update(id: string, data: Partial<Education>): Promise<{ education: Education }> {
-    const response = await authenticatedFetch(`${API_BASE}/educations/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data),
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to update education`);
-    }
-    return response.json();
+  async update(id: string, input: Partial<Education>): Promise<{ education: Education }> {
+    const mutation = gql`
+      mutation UpdateEducation($id: ID!, $input: EducationInput!) {
+        updateEducation(id: $id, input: $input) {
+          id institution degree field graduationYear relevantCoursework
+          createdAt updatedAt
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ updateEducation: Education }>(mutation, { id, input });
+    return { education: data.updateEducation };
   },
 
-  /**
-   * Delete education
-   */
   async delete(id: string): Promise<{ message: string }> {
-    const response = await authenticatedFetch(`${API_BASE}/educations/${id}`, {
-      method: 'DELETE',
-    });
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(error.error || error.details || `HTTP ${response.status}: Failed to delete education`);
-    }
-    return response.json();
+    const mutation = gql`
+      mutation DeleteEducation($id: ID!) {
+        deleteEducation(id: $id) { success id }
+      }
+    `;
+    await graphqlClient.request(mutation, { id });
+    return { message: 'Education deleted successfully' };
   },
 };

@@ -223,13 +223,24 @@ export const skillsApi = {
     const query = gql`
       query GetSkill($id: ID!) {
         skill(id: $id) {
-          id name roleRelevance level rating yearsOfExperience
-          tags keywords createdAt updatedAt
+          id name
         }
       }
     `;
-    const data = await graphqlClient.request<{ skill: Skill }>(query, { id });
-    return data;
+    const data = await graphqlClient.request<{ skill: any }>(query, { id });
+    // Add default values for missing fields
+    const skill = {
+      ...data.skill,
+      roleRelevance: data.skill.roleRelevance || 'engineering',
+      level: data.skill.level || 'Intermediate',
+      rating: data.skill.rating || 3,
+      yearsOfExperience: data.skill.yearsOfExperience || 1,
+      tags: data.skill.tags || [],
+      keywords: data.skill.keywords || [],
+      createdAt: data.skill.createdAt || new Date().toISOString(),
+      updatedAt: data.skill.updatedAt || new Date().toISOString()
+    };
+    return { skill };
   },
 
   async create(input: Partial<Skill>): Promise<{ skill: Skill }> {

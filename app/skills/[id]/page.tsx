@@ -114,11 +114,7 @@ export default function SkillPage() {
         <section className={styles.section}>
           <h2>Role Relevance</h2>
           <div className={styles.roleTypes}>
-            {skill.roleRelevance.map((role, idx) => (
-              <span key={idx} className={styles.roleTag}>
-                {role}
-              </span>
-            ))}
+            <span className={styles.badge}>{skill.roleRelevance}</span>
           </div>
         </section>
       )}

@@ -40,11 +40,10 @@ export default function SkillsForm({
   } = useForm({
     defaultValues: {
       name: initialData?.name || "",
-      roleRelevance: initialData?.roleRelevance || [],
+      roleRelevance: initialData?.roleRelevance || "",
       level: initialData?.level || "",
       rating: initialData?.rating || 3,
       yearsOfExperience: initialData?.yearsOfExperience || 0,
-      iconName: initialData?.iconName || "",
     },
   });
 
@@ -199,24 +198,23 @@ export default function SkillsForm({
       <section className={styles.section}>
         <h2>Role Relevance</h2>
         <p className={styles.sectionDesc}>
-          Select which roles this skill is relevant for
+          Select which role this skill is most relevant for
         </p>
 
         <div className={styles.field}>
-          <div className={styles.checkboxGroup}>
+          <select
+            {...register("roleRelevance", {
+              required: "Role relevance is required",
+            })}
+            className={errors.roleRelevance ? styles.inputError : ""}
+          >
+            <option value="">Select a role...</option>
             {ROLE_RELEVANCE_OPTIONS.map((role) => (
-              <label key={role.value}>
-                <input
-                  type="checkbox"
-                  value={role.value}
-                  {...register("roleRelevance", {
-                    required: "Select at least one role",
-                  })}
-                />
+              <option key={role.value} value={role.value}>
                 {role.label}
-              </label>
+              </option>
             ))}
-          </div>
+          </select>
           {errors.roleRelevance && (
             <span className={styles.fieldError}>
               {errors.roleRelevance.message}

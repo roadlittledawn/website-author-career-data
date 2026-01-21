@@ -21,9 +21,11 @@ export default function ProfilePage() {
     try {
       setIsLoading(true);
       const data = await profileApi.get();
+      console.log('Profile data:', data);
       setProfile(data.profile);
       setError('');
     } catch (err) {
+      console.error('Profile fetch error:', err);
       setError(err instanceof Error ? err.message : 'Failed to load profile');
     } finally {
       setIsLoading(false);
@@ -36,9 +38,8 @@ export default function ProfilePage() {
     }
 
     try {
-      await profileApi.delete();
-      router.refresh();
-      fetchProfile();
+      // Profile delete not supported in GraphQL API
+      alert('Profile reset not available. Please edit the profile instead.');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete profile');
     }
@@ -166,46 +167,36 @@ export default function ProfilePage() {
       <section className={styles.section}>
         <h2>Professional Positioning</h2>
 
-        {profile.positioning.current && (
-          <div className={styles.positioningCurrent}>
-            <label>Current Positioning</label>
-            <p>{profile.positioning.current}</p>
+        <div className={styles.infoItem}>
+          <label>Headline</label>
+          <p>{profile.positioning.headline || '—'}</p>
+        </div>
+
+        <div className={styles.infoItem}>
+          <label>Summary</label>
+          <p>{profile.positioning.summary || '—'}</p>
+        </div>
+
+        {profile.positioning.targetRoles && profile.positioning.targetRoles.length > 0 && (
+          <div className={styles.infoItem}>
+            <label>Target Roles</label>
+            <ul className={styles.list}>
+              {profile.positioning.targetRoles.map((role, index) => (
+                <li key={index}>{role}</li>
+              ))}
+            </ul>
           </div>
         )}
 
-        {(profile.positioning.byRole?.technical_writer ||
-          profile.positioning.byRole?.technical_writing_manager ||
-          profile.positioning.byRole?.software_engineer ||
-          profile.positioning.byRole?.engineering_manager) && (
-          <>
-            <h3>Role-Specific Positioning</h3>
-            <div className={styles.rolePositioning}>
-              {profile.positioning.byRole.technical_writer && (
-                <div className={styles.roleItem}>
-                  <label>Technical Writer</label>
-                  <p>{profile.positioning.byRole.technical_writer}</p>
-                </div>
-              )}
-              {profile.positioning.byRole.technical_writing_manager && (
-                <div className={styles.roleItem}>
-                  <label>Technical Writing Manager</label>
-                  <p>{profile.positioning.byRole.technical_writing_manager}</p>
-                </div>
-              )}
-              {profile.positioning.byRole.software_engineer && (
-                <div className={styles.roleItem}>
-                  <label>Software Engineer</label>
-                  <p>{profile.positioning.byRole.software_engineer}</p>
-                </div>
-              )}
-              {profile.positioning.byRole.engineering_manager && (
-                <div className={styles.roleItem}>
-                  <label>Engineering Manager</label>
-                  <p>{profile.positioning.byRole.engineering_manager}</p>
-                </div>
-              )}
-            </div>
-          </>
+        {profile.positioning.targetIndustries && profile.positioning.targetIndustries.length > 0 && (
+          <div className={styles.infoItem}>
+            <label>Target Industries</label>
+            <ul className={styles.list}>
+              {profile.positioning.targetIndustries.map((industry, index) => (
+                <li key={index}>{industry}</li>
+              ))}
+            </ul>
+          </div>
         )}
       </section>
 
@@ -244,7 +235,7 @@ export default function ProfilePage() {
       {/* Metadata */}
       <div className={styles.metadata}>
         <p>
-          Last updated: {new Date(profile.lastUpdated).toLocaleDateString('en-US', {
+          Last updated: {new Date(profile.updatedAt).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',

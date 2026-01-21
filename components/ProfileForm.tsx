@@ -26,6 +26,14 @@ export default function ProfileForm({
     initialData?.uniqueSellingPoints || []
   );
   const [newUSP, setNewUSP] = useState("");
+  const [targetRoles, setTargetRoles] = useState<string[]>(
+    initialData?.positioning?.targetRoles || []
+  );
+  const [newRole, setNewRole] = useState("");
+  const [targetIndustries, setTargetIndustries] = useState<string[]>(
+    initialData?.positioning?.targetIndustries || []
+  );
+  const [newIndustry, setNewIndustry] = useState("");
 
   const {
     register,
@@ -46,13 +54,8 @@ export default function ProfileForm({
         },
       },
       positioning: {
-        current: initialData?.positioning?.current || "",
-        byRole: {
-          technical_writer: initialData?.positioning?.byRole?.technical_writer || "",
-          technical_writing_manager: initialData?.positioning?.byRole?.technical_writing_manager || "",
-          software_engineer: initialData?.positioning?.byRole?.software_engineer || "",
-          engineering_manager: initialData?.positioning?.byRole?.engineering_manager || "",
-        },
+        headline: initialData?.positioning?.headline || "",
+        summary: initialData?.positioning?.summary || "",
       },
       professionalMission: initialData?.professionalMission || "",
     },
@@ -65,9 +68,14 @@ export default function ProfileForm({
     try {
       const profileData: Partial<Profile> = {
         personalInfo: data.personalInfo,
-        positioning: data.positioning,
+        positioning: {
+          headline: data.positioning.headline,
+          summary: data.positioning.summary,
+          targetRoles,
+          targetIndustries,
+        },
         valuePropositions,
-        professionalMission: data.professionalMission || undefined,
+        professionalMission: data.professionalMission || "",
         uniqueSellingPoints,
       };
 
@@ -100,6 +108,28 @@ export default function ProfileForm({
 
   const removeUniqueSellingPoint = (index: number) => {
     setUniqueSellingPoints(uniqueSellingPoints.filter((_, i) => i !== index));
+  };
+
+  const addTargetRole = () => {
+    if (newRole.trim()) {
+      setTargetRoles([...targetRoles, newRole.trim()]);
+      setNewRole("");
+    }
+  };
+
+  const removeTargetRole = (index: number) => {
+    setTargetRoles(targetRoles.filter((_, i) => i !== index));
+  };
+
+  const addTargetIndustry = () => {
+    if (newIndustry.trim()) {
+      setTargetIndustries([...targetIndustries, newIndustry.trim()]);
+      setNewIndustry("");
+    }
+  };
+
+  const removeTargetIndustry = (index: number) => {
+    setTargetIndustries(targetIndustries.filter((_, i) => i !== index));
   };
 
   return (
@@ -213,55 +243,103 @@ export default function ProfileForm({
         <h2>Professional Positioning</h2>
 
         <div className={styles.formGroup}>
-          <label htmlFor="positioning-current">Current Positioning Statement</label>
-          <textarea
-            id="positioning-current"
-            {...register("positioning.current")}
-            rows={3}
-            placeholder="Your current professional positioning..."
+          <label htmlFor="positioning-headline">Headline *</label>
+          <input
+            id="positioning-headline"
+            type="text"
+            {...register("positioning.headline", { required: "Headline is required" })}
+            placeholder="e.g., Senior Technical Writer & Software Engineer"
+            className={errors.positioning?.headline ? styles.inputError : ""}
           />
-        </div>
-
-        <h3>Role-Specific Positioning</h3>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-tw">Technical Writer</label>
-          <textarea
-            id="positioning-tw"
-            {...register("positioning.byRole.technical_writer")}
-            rows={2}
-            placeholder="Your positioning as a technical writer..."
-          />
+          {errors.positioning?.headline && (
+            <span className={styles.errorText}>
+              {errors.positioning.headline.message}
+            </span>
+          )}
         </div>
 
         <div className={styles.formGroup}>
-          <label htmlFor="positioning-twm">Technical Writing Manager</label>
+          <label htmlFor="positioning-summary">Summary *</label>
           <textarea
-            id="positioning-twm"
-            {...register("positioning.byRole.technical_writing_manager")}
-            rows={2}
-            placeholder="Your positioning as a technical writing manager..."
+            id="positioning-summary"
+            {...register("positioning.summary", { required: "Summary is required" })}
+            rows={4}
+            placeholder="Your professional summary..."
+            className={errors.positioning?.summary ? styles.inputError : ""}
           />
+          {errors.positioning?.summary && (
+            <span className={styles.errorText}>
+              {errors.positioning.summary.message}
+            </span>
+          )}
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-se">Software Engineer</label>
-          <textarea
-            id="positioning-se"
-            {...register("positioning.byRole.software_engineer")}
-            rows={2}
-            placeholder="Your positioning as a software engineer..."
+        <h3>Target Roles</h3>
+        <div className={styles.arrayInput}>
+          <input
+            type="text"
+            value={newRole}
+            onChange={(e) => setNewRole(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addTargetRole();
+              }
+            }}
+            placeholder="Add a target role..."
           />
+          <button type="button" onClick={addTargetRole} className={styles.addBtn}>
+            Add
+          </button>
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-em">Engineering Manager</label>
-          <textarea
-            id="positioning-em"
-            {...register("positioning.byRole.engineering_manager")}
-            rows={2}
-            placeholder="Your positioning as an engineering manager..."
+        <div className={styles.listItems}>
+          {targetRoles.map((role, index) => (
+            <div key={index} className={styles.listItem}>
+              <span>{role}</span>
+              <button
+                type="button"
+                onClick={() => removeTargetRole(index)}
+                className={styles.removeBtn}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
+
+        <h3>Target Industries</h3>
+        <div className={styles.arrayInput}>
+          <input
+            type="text"
+            value={newIndustry}
+            onChange={(e) => setNewIndustry(e.target.value)}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addTargetIndustry();
+              }
+            }}
+            placeholder="Add a target industry..."
           />
+          <button type="button" onClick={addTargetIndustry} className={styles.addBtn}>
+            Add
+          </button>
+        </div>
+
+        <div className={styles.listItems}>
+          {targetIndustries.map((industry, index) => (
+            <div key={index} className={styles.listItem}>
+              <span>{industry}</span>
+              <button
+                type="button"
+                onClick={() => removeTargetIndustry(index)}
+                className={styles.removeBtn}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
         </div>
       </section>
 

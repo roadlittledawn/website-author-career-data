@@ -40,7 +40,7 @@ export default function SkillsPage() {
 
     try {
       await skillsApi.delete(id);
-      setSkills(skills.filter(skill => skill._id !== id));
+      setSkills(skills.filter(skill => skill.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete skill');
     }
@@ -57,10 +57,10 @@ export default function SkillsPage() {
   // Calculate stats
   const totalSkills = skills.length;
   const writingSkills = skills.filter(skill =>
-    skill.roleRelevance?.some(role => role.toLowerCase().includes('writing'))
+    skill.roleRelevance?.toLowerCase().includes('writing')
   ).length;
   const engineeringSkills = skills.filter(skill =>
-    skill.roleRelevance?.some(role => role.toLowerCase().includes('engineering'))
+    skill.roleRelevance?.toLowerCase().includes('engineering')
   ).length;
 
   return (
@@ -104,7 +104,7 @@ export default function SkillsPage() {
           </div>
         ) : (
           skills.map((skill) => {
-            const skillId = skill._id?.toString() || '';
+            const skillId = skill.id?.toString() || '';
 
             return (
               <div key={skillId} className={styles.skillCard}>
@@ -117,13 +117,9 @@ export default function SkillsPage() {
 
                   <div className={styles.level}>{skill.level}</div>
 
-                  {skill.roleRelevance && skill.roleRelevance.length > 0 && (
+                  {skill.roleRelevance && (
                     <div className={styles.roles}>
-                      {skill.roleRelevance.map((role, idx) => (
-                        <span key={idx} className={styles.roleTag}>
-                          {role}
-                        </span>
-                      ))}
+                      <span className={styles.badge}>{skill.roleRelevance}</span>
                     </div>
                   )}
                 </div>

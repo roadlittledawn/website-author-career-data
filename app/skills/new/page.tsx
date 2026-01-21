@@ -24,7 +24,7 @@ export default function NewSkillPage() {
     }
 
     const result = await response.json();
-    router.push(`/skills/${result.skill._id}`);
+    router.push(`/skills/${result.skill.id}`);
   };
 
   const handleCancel = () => {

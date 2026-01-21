@@ -40,7 +40,7 @@ export default function EducationPage() {
 
     try {
       await educationApi.delete(id);
-      setEducations(educations.filter(edu => edu._id !== id));
+      setEducations(educations.filter(edu => edu.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete education');
     }
@@ -104,7 +104,7 @@ export default function EducationPage() {
           </div>
         ) : (
           educations.map((education) => {
-            const educationId = education._id?.toString() || '';
+            const educationId = education.id?.toString() || '';
 
             return (
               <div key={educationId} className={styles.educationCard}>

@@ -24,7 +24,7 @@ export default function NewEducationPage() {
     }
 
     const result = await response.json();
-    router.push(`/education/${result.education._id}`);
+    router.push(`/education/${result.education.id}`);
   };
 
   const handleCancel = () => {

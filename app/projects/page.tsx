@@ -50,7 +50,7 @@ export default function ProjectsPage() {
 
     try {
       await projectsApi.delete(id);
-      setProjects(projects.filter((p) => p._id !== id));
+      setProjects(projects.filter((p) => p.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to delete project");
     }
@@ -138,7 +138,7 @@ export default function ProjectsPage() {
       ) : (
         <div className={styles.projectGrid}>
           {projects.map((project) => (
-            <div key={project._id} className={styles.projectCard}>
+            <div key={project.id} className={styles.projectCard}>
               <div className={styles.cardHeader}>
                 <h3>{project.name}</h3>
                 {project.featured && (
@@ -170,19 +170,19 @@ export default function ProjectsPage() {
 
               <div className={styles.cardActions}>
                 <Link
-                  href={`/projects/${project._id}`}
+                  href={`/projects/${project.id}`}
                   className={styles.viewBtn}
                 >
                   View
                 </Link>
                 <Link
-                  href={`/projects/${project._id}/edit`}
+                  href={`/projects/${project.id}/edit`}
                   className={styles.editBtn}
                 >
                   Edit
                 </Link>
                 <button
-                  onClick={() => handleDelete(project._id!)}
+                  onClick={() => handleDelete(project.id!)}
                   className={styles.deleteBtn}
                 >
                   Delete

@@ -37,7 +37,7 @@ export default function ExperiencesPage() {
 
     try {
       await experiencesApi.delete(id);
-      setExperiences(experiences.filter(exp => exp._id !== id));
+      setExperiences(experiences.filter(exp => exp.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Failed to delete experience');
     }
@@ -77,7 +77,7 @@ export default function ExperiencesPage() {
           </div>
         ) : (
           experiences.map((experience) => {
-            const experienceId = experience._id?.toString() || '';
+            const experienceId = experience.id?.toString() || '';
             console.log('Experience ID:', experienceId); // Debug log
 
             return (

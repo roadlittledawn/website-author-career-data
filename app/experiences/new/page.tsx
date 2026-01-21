@@ -24,7 +24,7 @@ export default function NewExperiencePage() {
     }
 
     const result = await response.json();
-    router.push(`/experiences/${result.experience._id}`);
+    router.push(`/experiences/${result.experience.id}`);
   };
 
   const handleCancel = () => {

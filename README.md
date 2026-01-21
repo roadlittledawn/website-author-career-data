@@ -1,21 +1,23 @@
 # Career Data Admin Web App
 
-A Next.js admin interface for managing professional career data in MongoDB.
+A Next.js admin interface for managing professional career data via GraphQL API.
 
 ## Features
 
 - ✅ **Career Data Management**: Full CRUD operations for profile, experiences, skills, projects, and education
 - ✅ **JWT Authentication**: Secure login with bcrypt password hashing and JWT tokens (24-hour sessions)
+- ✅ **GraphQL API**: Type-safe queries and mutations via centralized GraphQL API
 - ✅ **Compact Grid Layouts**: Efficient data display with icon-based actions (👁️ view, ✏️ edit, 🗑️ delete)
 - 📱 **Responsive Design**: Mobile-first design that works on all screen sizes
-- ☁️ **Serverless Architecture**: Netlify Functions for scalable backend API
+- ☁️ **Serverless Backend**: AWS Lambda-hosted GraphQL API
 
 ## Tech Stack
 
 - **Frontend**: Next.js 14 (React) with App Router, TypeScript
-- **Backend**: Netlify Functions (serverless)
-- **Database**: MongoDB with connection caching
+- **Backend**: GraphQL API (AWS Lambda)
+- **Database**: MongoDB Atlas
 - **Authentication**: JWT (jsonwebtoken) + bcrypt password hashing
+- **API Client**: graphql-request
 - **Styling**: CSS Modules with responsive grid layouts
 - **Forms**: React Hook Form
 
@@ -24,8 +26,8 @@ A Next.js admin interface for managing professional career data in MongoDB.
 ### Prerequisites
 
 - Node.js 18+ installed
-- MongoDB database (MongoDB Atlas recommended)
-- Netlify CLI: `npm install -g netlify-cli`
+- Access to GraphQL API (api-career-data)
+- API key for GraphQL API authentication
 
 ### Installation
 
@@ -47,14 +49,14 @@ A Next.js admin interface for managing professional career data in MongoDB.
    Create a `.env` file in the root directory:
 
    ```env
-   # Database
-   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
-   MONGODB_DB_NAME=career-data
-
    # Authentication
    AUTH_SECRET=your-secret-key-for-jwt-signing
    ADMIN_USERNAME=admin
    ADMIN_PASSWORD_HASH=your-bcrypt-hashed-password
+
+   # GraphQL API
+   NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql
+   NEXT_PUBLIC_API_KEY=your-api-key-here
    ```
 
    **To generate password hash**:
@@ -63,8 +65,6 @@ A Next.js admin interface for managing professional career data in MongoDB.
    node -e "console.log(require('bcryptjs').hashSync('your-password', 10))"
    ```
 
-   **Note**: For local development with Netlify CLI, use `.env` (not `.env.local`)
-
 4. **Run the development server**:
 
    ```bash
@@ -72,17 +72,6 @@ A Next.js admin interface for managing professional career data in MongoDB.
    ```
 
 5. **Open your browser**: Navigate to [http://localhost:3000](http://localhost:3000)
-
-### Development with Netlify CLI
-
-To test serverless functions locally:
-
-```bash
-npm install -g netlify-cli
-netlify dev
-```
-
-This starts the Next.js app and Netlify Functions together.
 
 ## Project Structure
 
@@ -106,21 +95,16 @@ This starts the Next.js app and Netlify Functions together.
 │   └── ProfileForm.tsx          # Profile form component
 ├── lib/
 │   ├── types.ts                 # TypeScript type definitions
-│   ├── api.ts                   # API client functions
+│   ├── api.ts                   # GraphQL API client functions
+│   ├── graphql-client.ts        # GraphQL client configuration
 │   └── auth.ts                  # Authentication utilities
 ├── netlify/
 │   └── functions/
-│       ├── auth-login.js        # Login endpoint
+│       ├── auth-login.js        # Login endpoint (JWT)
 │       ├── auth-logout.js       # Logout endpoint
-│       ├── auth-verify.js       # Token verification
-│       ├── experiences.js       # Experiences CRUD API
-│       ├── skills.js            # Skills CRUD API
-│       ├── projects.js          # Projects CRUD API
-│       ├── educations.js        # Education CRUD API
-│       └── profile.js           # Profile API (singleton)
+│       └── auth-verify.js       # Token verification
 ├── public/                       # Static assets
 ├── next.config.mjs              # Next.js configuration
-├── netlify.toml                 # Netlify configuration
 ├── tsconfig.json                # TypeScript configuration
 ├── package.json                 # Dependencies
 └── REQUIREMENTS.md              # Detailed requirements document
@@ -139,24 +123,23 @@ This starts the Next.js app and Netlify Functions together.
 
 2. **Set environment variables**: In Netlify dashboard, go to **Site settings** → **Environment variables** and add:
 
-   - `MONGODB_URI` - Your MongoDB connection string
-   - `MONGODB_DB_NAME` - Database name (e.g., `career-data`)
    - `AUTH_SECRET` - Secret key for JWT signing
    - `ADMIN_USERNAME` - Admin username (e.g., `admin`)
    - `ADMIN_PASSWORD_HASH` - Bcrypt hashed password
+   - `NEXT_PUBLIC_GRAPHQL_ENDPOINT` - GraphQL API endpoint URL
+   - `NEXT_PUBLIC_API_KEY` - API key for GraphQL API
 
 3. **Deploy**:
 
    ```bash
    npm run build  # Test build locally first
-   netlify deploy --prod
    ```
 
    Or simply push to your main branch for automatic deployment.
 
 ### Netlify Configuration
 
-The `netlify.toml` file is already configured with:
+The `netlify.toml` file is configured with:
 
 - Next.js plugin (`@netlify/plugin-nextjs`)
 - Serverless functions directory
@@ -175,53 +158,56 @@ The app manages 5 main collections:
 
 See [REQUIREMENTS.md](./REQUIREMENTS.md) for detailed schema documentation.
 
-## API Endpoints
+## GraphQL API
 
-All endpoints require JWT authentication via `Authorization: Bearer <token>` header.
+The app connects to a centralized GraphQL API hosted on AWS Lambda. All queries and mutations require API key authentication via `X-API-Key` header.
 
-### Authentication
+**API Endpoint**: `https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql`
 
-- `POST /.netlify/functions/auth-login` - Login (returns JWT token)
-- `POST /.netlify/functions/auth-logout` - Logout
-- `GET /.netlify/functions/auth-verify` - Verify token validity
+### Example Queries
 
-### Profile (Singleton)
+**Get all experiences:**
+```graphql
+query {
+  experiences {
+    id company title startDate endDate technologies
+  }
+}
+```
 
-- `GET /.netlify/functions/profile` - Get profile (creates default if not exists)
-- `PUT /.netlify/functions/profile` - Update profile
-- `DELETE /.netlify/functions/profile` - Reset profile to default
+**Get profile:**
+```graphql
+query {
+  profile {
+    id
+    personalInfo { name email location }
+    positioning { headline summary }
+  }
+}
+```
 
-### Experiences
+### Example Mutations
 
-- `GET /.netlify/functions/experiences` - List all experiences
-- `GET /.netlify/functions/experiences/:id` - Get single experience
-- `POST /.netlify/functions/experiences` - Create experience
-- `PUT /.netlify/functions/experiences/:id` - Update experience
-- `DELETE /.netlify/functions/experiences/:id` - Delete experience
+**Create experience:**
+```graphql
+mutation {
+  createExperience(input: {
+    company: "Company Name"
+    title: "Job Title"
+    location: "City, State"
+    startDate: "2020-01-01"
+    roleTypes: ["software_engineer"]
+    responsibilities: ["Responsibility 1"]
+    achievements: []
+    technologies: ["JavaScript", "React"]
+    featured: false
+  }) {
+    id company title
+  }
+}
+```
 
-### Skills
-
-- `GET /.netlify/functions/skills` - List all skills
-- `GET /.netlify/functions/skills/:id` - Get single skill
-- `POST /.netlify/functions/skills` - Create skill
-- `PUT /.netlify/functions/skills/:id` - Update skill
-- `DELETE /.netlify/functions/skills/:id` - Delete skill
-
-### Projects
-
-- `GET /.netlify/functions/projects` - List all projects
-- `GET /.netlify/functions/projects/:id` - Get single project
-- `POST /.netlify/functions/projects` - Create project
-- `PUT /.netlify/functions/projects/:id` - Update project
-- `DELETE /.netlify/functions/projects/:id` - Delete project
-
-### Education
-
-- `GET /.netlify/functions/educations` - List all education records
-- `GET /.netlify/functions/educations/:id` - Get single education record
-- `POST /.netlify/functions/educations` - Create education record
-- `PUT /.netlify/functions/educations/:id` - Update education record
-- `DELETE /.netlify/functions/educations/:id` - Delete education record
+For complete schema documentation, see the [api-career-data repository](https://github.com/roadlittledawn/api-career-data).
 
 ## Development
 
@@ -256,16 +242,13 @@ All endpoints require JWT authentication via `Authorization: Bearer <token>` hea
 ### Local Development
 
 ```bash
-netlify dev         # Starts Next.js + Netlify Functions together
+npm run dev         # Starts Next.js + Netlify Functions together (netlify dev)
 ```
-
-**Important**: Use `netlify dev` instead of `npm run dev` to properly run Netlify Functions locally.
 
 ### Build for Production
 
 ```bash
 npm run build       # Creates optimized production build
-netlify deploy --prod  # Deploy to production
 ```
 
 ### Clear Local Cache
@@ -273,8 +256,8 @@ netlify deploy --prod  # Deploy to production
 If you encounter authentication issues during development:
 
 ```bash
-rm -rf .netlify     # Clear cached functions
-netlify dev         # Restart dev server
+rm -rf .netlify .next  # Clear Netlify and Next.js cache
+npm run dev            # Restart dev server
 ```
 
 ## Contributing

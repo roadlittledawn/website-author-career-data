@@ -29,6 +29,31 @@ A Next.js admin interface for managing professional career data via GraphQL API.
 - Access to GraphQL API (api-career-data)
 - API key for GraphQL API authentication
 
+### Local Development with API
+
+**Option 1: Use Production API**
+```env
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql
+NEXT_PUBLIC_API_KEY=your-api-key
+```
+
+**Option 2: Use Local API Server**
+```env
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=http://localhost:4000/graphql
+NEXT_PUBLIC_API_KEY=your-api-key
+```
+
+Start the local API server first (in api-career-data repo):
+```bash
+cd ../api-career-data
+npm run dev  # Starts on http://localhost:4000
+```
+
+Then start this app:
+```bash
+npm run dev  # Starts on http://localhost:8888
+```
+
 ### Installation
 
 1. **Clone the repository**:

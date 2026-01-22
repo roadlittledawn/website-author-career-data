@@ -53,6 +53,8 @@ export interface Experience {
   responsibilities: string[];
   achievements: Achievement[];
   technologies: string[];
+  organizations?: string[];
+  crossFunctional?: string[];
   featured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -67,8 +69,15 @@ export interface Skill {
   yearsOfExperience: number;
   tags: string[];
   keywords: string[];
+  iconName?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ProjectLink {
+  type: string;
+  url: string;
+  linkText?: string;
 }
 
 export interface Project {
@@ -85,6 +94,7 @@ export interface Project {
   technologies: string[];
   keywords: string[];
   roleTypes: string[];
+  links?: ProjectLink[];
   createdAt: string;
   updatedAt: string;
 }
@@ -96,6 +106,7 @@ export interface Education {
   field: string;
   graduationYear: number;
   relevantCoursework: string[];
+  displayOrder?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -131,7 +142,7 @@ export interface AIContext {
   };
   currentItem: any; // Type depends on collection
   relatedContext: {
-    skills?: SkillCategory[];
+    skills?: Skill[];
     keywords?: KeywordCategory[];
     recentExperiences?: Experience[];
     relatedProjects?: Project[];

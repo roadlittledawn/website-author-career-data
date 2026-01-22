@@ -44,6 +44,7 @@ export default function SkillsForm({
       level: initialData?.level || "",
       rating: initialData?.rating || 3,
       yearsOfExperience: initialData?.yearsOfExperience || 0,
+      iconName: initialData?.iconName || "",
     },
   });
 

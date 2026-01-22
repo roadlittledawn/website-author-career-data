@@ -12,7 +12,7 @@ export default function NewProjectPage() {
   const handleSubmit = async (data: Partial<Project>) => {
     try {
       const result = await projectsApi.create(data);
-      router.push(`/projects/${result.projectId}`);
+      router.push(`/projects/${result.project.id}`);
     } catch (error) {
       throw error;
     }

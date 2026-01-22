@@ -96,10 +96,6 @@ export default function EducationDetailPage() {
             <label>Graduation Year</label>
             <p>{education.graduationYear}</p>
           </div>
-          <div className={styles.infoItem}>
-            <label>Display Order</label>
-            <p>{education.displayOrder || 0}</p>
-          </div>
         </div>
       </section>
 

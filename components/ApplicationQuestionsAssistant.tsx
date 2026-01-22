@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { marked } from 'marked';
+import { jobAgentApi } from '../lib/api';
 import styles from './ApplicationQuestionsAssistant.module.css';
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
@@ -57,39 +58,29 @@ export default function ApplicationQuestionsAssistant({ jobInfo, onComplete, onB
 
     setIsGenerating(true);
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      let result;
 
-      const response = await fetch('/.netlify/functions/job-agent-question', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('career_admin_token')}`
-        },
-        body: JSON.stringify({
+      if (action === 'generate') {
+        result = await jobAgentApi.generateAnswer(
           jobInfo,
-          question: currentQuestion.question,
-          currentAnswer: currentQuestion.answer,
-          feedback: action === 'revise' ? feedback : undefined,
-          action
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error('Failed to generate answer');
+          currentQuestion.question,
+          currentQuestion.answer || undefined
+        );
+      } else {
+        result = await jobAgentApi.reviseAnswer(
+          jobInfo,
+          currentQuestion.question,
+          currentQuestion.answer,
+          feedback
+        );
       }
-
-      const data = await response.json();
 
       setQuestions(prev => prev.map((q, idx) => {
         if (idx === currentQuestionIndex) {
           return {
             ...q,
-            answer: data.answer,
-            iterations: action === 'generate' ? [data.answer] : [...q.iterations, data.answer]
+            answer: result.content,
+            iterations: action === 'generate' ? [result.content] : [...q.iterations, result.content]
           };
         }
         return q;
@@ -98,11 +89,7 @@ export default function ApplicationQuestionsAssistant({ jobInfo, onComplete, onB
       setFeedback('');
     } catch (error) {
       console.error('Answer generation error:', error);
-      if (error instanceof Error && error.name === 'AbortError') {
-        alert('Request timed out after 90 seconds. Please try again.');
-      } else {
-        alert('Failed to generate answer. Please try again.');
-      }
+      alert('Failed to generate answer. Please try again.');
     } finally {
       setIsGenerating(false);
     }

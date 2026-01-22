@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { marked } from 'marked';
+import { jobAgentApi } from '../lib/api';
 import styles from './CoverLetterGenerator.module.css';
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
@@ -32,48 +33,27 @@ export default function CoverLetterGenerator({ jobInfo, onFinalize, onBack }: Co
   const generateCoverLetter = async (action: 'generate' | 'revise' = 'generate') => {
     setIsGenerating(true);
     try {
-      // Create abort controller with 90 second timeout
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
-
-      const response = await fetch('/.netlify/functions/job-agent-cover-letter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('career_admin_token')}`
-        },
-        body: JSON.stringify({
-          jobInfo,
-          additionalContext: action === 'generate' ? additionalContext : feedback,
-          action
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error('Failed to generate cover letter');
-      }
-
-      const data = await response.json();
-      setCoverLetterDraft(data.coverLetter);
+      let result;
 
       if (action === 'generate') {
-        setIterations([data.coverLetter]);
+        result = await jobAgentApi.generateCoverLetter(jobInfo, additionalContext);
+      } else {
+        result = await jobAgentApi.reviseCoverLetter(jobInfo, feedback);
+      }
+
+      setCoverLetterDraft(result.content);
+
+      if (action === 'generate') {
+        setIterations([result.content]);
         setCurrentStep('review');
       } else {
-        setIterations(prev => [...prev, data.coverLetter]);
+        setIterations(prev => [...prev, result.content]);
       }
 
       setFeedback('');
     } catch (error) {
       console.error('Cover letter generation error:', error);
-      if (error instanceof Error && error.name === 'AbortError') {
-        alert('Request timed out after 90 seconds. The cover letter generation is taking longer than expected. Please try again or contact support.');
-      } else {
-        alert('Failed to generate cover letter. Please try again.');
-      }
+      alert('Failed to generate cover letter. Please try again.');
     } finally {
       setIsGenerating(false);
     }

@@ -280,6 +280,158 @@ export const skillsApi = {
   },
 };
 
+// Types for Job Agent API
+interface JobInfoInput {
+  url?: string;
+  description: string;
+  jobType: 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
+  extractedDescription?: string;
+}
+
+interface AIGenerationResponse {
+  content: string;
+  usage: {
+    inputTokens: number;
+    outputTokens: number;
+    cacheReadInputTokens: number;
+    cacheCreationInputTokens: number;
+  };
+}
+
+/**
+ * Job Agent API - AI-powered resume, cover letter, and question generation
+ */
+export const jobAgentApi = {
+  async generateResume(jobInfo: JobInfoInput, additionalContext?: string): Promise<AIGenerationResponse> {
+    const mutation = gql`
+      mutation GenerateResume($jobInfo: JobInfoInput!, $additionalContext: String) {
+        generateResume(jobInfo: $jobInfo, additionalContext: $additionalContext) {
+          content
+          usage {
+            inputTokens
+            outputTokens
+            cacheReadInputTokens
+            cacheCreationInputTokens
+          }
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ generateResume: AIGenerationResponse }>(mutation, {
+      jobInfo,
+      additionalContext
+    });
+    return data.generateResume;
+  },
+
+  async reviseResume(jobInfo: JobInfoInput, feedback: string): Promise<AIGenerationResponse> {
+    const mutation = gql`
+      mutation ReviseResume($jobInfo: JobInfoInput!, $feedback: String!) {
+        reviseResume(jobInfo: $jobInfo, feedback: $feedback) {
+          content
+          usage {
+            inputTokens
+            outputTokens
+            cacheReadInputTokens
+            cacheCreationInputTokens
+          }
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ reviseResume: AIGenerationResponse }>(mutation, {
+      jobInfo,
+      feedback
+    });
+    return data.reviseResume;
+  },
+
+  async generateCoverLetter(jobInfo: JobInfoInput, additionalContext?: string): Promise<AIGenerationResponse> {
+    const mutation = gql`
+      mutation GenerateCoverLetter($jobInfo: JobInfoInput!, $additionalContext: String) {
+        generateCoverLetter(jobInfo: $jobInfo, additionalContext: $additionalContext) {
+          content
+          usage {
+            inputTokens
+            outputTokens
+            cacheReadInputTokens
+            cacheCreationInputTokens
+          }
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ generateCoverLetter: AIGenerationResponse }>(mutation, {
+      jobInfo,
+      additionalContext
+    });
+    return data.generateCoverLetter;
+  },
+
+  async reviseCoverLetter(jobInfo: JobInfoInput, feedback: string): Promise<AIGenerationResponse> {
+    const mutation = gql`
+      mutation ReviseCoverLetter($jobInfo: JobInfoInput!, $feedback: String!) {
+        reviseCoverLetter(jobInfo: $jobInfo, feedback: $feedback) {
+          content
+          usage {
+            inputTokens
+            outputTokens
+            cacheReadInputTokens
+            cacheCreationInputTokens
+          }
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ reviseCoverLetter: AIGenerationResponse }>(mutation, {
+      jobInfo,
+      feedback
+    });
+    return data.reviseCoverLetter;
+  },
+
+  async generateAnswer(jobInfo: JobInfoInput, question: string, currentAnswer?: string): Promise<AIGenerationResponse> {
+    const mutation = gql`
+      mutation GenerateAnswer($jobInfo: JobInfoInput!, $question: String!, $currentAnswer: String) {
+        generateAnswer(jobInfo: $jobInfo, question: $question, currentAnswer: $currentAnswer) {
+          content
+          usage {
+            inputTokens
+            outputTokens
+            cacheReadInputTokens
+            cacheCreationInputTokens
+          }
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ generateAnswer: AIGenerationResponse }>(mutation, {
+      jobInfo,
+      question,
+      currentAnswer
+    });
+    return data.generateAnswer;
+  },
+
+  async reviseAnswer(jobInfo: JobInfoInput, question: string, currentAnswer: string, feedback: string): Promise<AIGenerationResponse> {
+    const mutation = gql`
+      mutation ReviseAnswer($jobInfo: JobInfoInput!, $question: String!, $currentAnswer: String!, $feedback: String!) {
+        reviseAnswer(jobInfo: $jobInfo, question: $question, currentAnswer: $currentAnswer, feedback: $feedback) {
+          content
+          usage {
+            inputTokens
+            outputTokens
+            cacheReadInputTokens
+            cacheCreationInputTokens
+          }
+        }
+      }
+    `;
+    const data = await graphqlClient.request<{ reviseAnswer: AIGenerationResponse }>(mutation, {
+      jobInfo,
+      question,
+      currentAnswer,
+      feedback
+    });
+    return data.reviseAnswer;
+  },
+};
+
 /**
  * Education API
  */

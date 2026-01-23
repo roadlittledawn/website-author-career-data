@@ -2,8 +2,25 @@
 
 import { useState } from 'react';
 import { marked } from 'marked';
-import { jobAgentApi } from '../lib/api';
+import { gql } from 'graphql-request';
+import graphqlClient from '@/lib/graphql-client';
 import styles from './CoverLetterGenerator.module.css';
+
+const GENERATE_COVER_LETTER_MUTATION = gql`
+  mutation GenerateCoverLetter($jobInfo: JobInfoInput!, $additionalContext: String) {
+    generateCoverLetter(jobInfo: $jobInfo, additionalContext: $additionalContext) {
+      content
+    }
+  }
+`;
+
+const REVISE_COVER_LETTER_MUTATION = gql`
+  mutation ReviseCoverLetter($jobInfo: JobInfoInput!, $feedback: String!) {
+    reviseCoverLetter(jobInfo: $jobInfo, feedback: $feedback) {
+      content
+    }
+  }
+`;
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
 
@@ -33,12 +50,20 @@ export default function CoverLetterGenerator({ jobInfo, onFinalize, onBack }: Co
   const generateCoverLetter = async (action: 'generate' | 'revise' = 'generate') => {
     setIsGenerating(true);
     try {
-      let result;
+      let result: { content: string };
 
       if (action === 'generate') {
-        result = await jobAgentApi.generateCoverLetter(jobInfo, additionalContext);
+        const data = await graphqlClient.request<{ generateCoverLetter: { content: string } }>(
+          GENERATE_COVER_LETTER_MUTATION,
+          { jobInfo, additionalContext }
+        );
+        result = data.generateCoverLetter;
       } else {
-        result = await jobAgentApi.reviseCoverLetter(jobInfo, feedback);
+        const data = await graphqlClient.request<{ reviseCoverLetter: { content: string } }>(
+          REVISE_COVER_LETTER_MUTATION,
+          { jobInfo, feedback }
+        );
+        result = data.reviseCoverLetter;
       }
 
       setCoverLetterDraft(result.content);

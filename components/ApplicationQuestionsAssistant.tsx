@@ -2,8 +2,25 @@
 
 import { useState } from 'react';
 import { marked } from 'marked';
-import { jobAgentApi } from '../lib/api';
+import { gql } from 'graphql-request';
+import graphqlClient from '@/lib/graphql-client';
 import styles from './ApplicationQuestionsAssistant.module.css';
+
+const GENERATE_ANSWER_MUTATION = gql`
+  mutation GenerateAnswer($jobInfo: JobInfoInput!, $question: String!, $currentAnswer: String) {
+    generateAnswer(jobInfo: $jobInfo, question: $question, currentAnswer: $currentAnswer) {
+      content
+    }
+  }
+`;
+
+const REVISE_ANSWER_MUTATION = gql`
+  mutation ReviseAnswer($jobInfo: JobInfoInput!, $question: String!, $currentAnswer: String!, $feedback: String!) {
+    reviseAnswer(jobInfo: $jobInfo, question: $question, currentAnswer: $currentAnswer, feedback: $feedback) {
+      content
+    }
+  }
+`;
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
 
@@ -58,21 +75,29 @@ export default function ApplicationQuestionsAssistant({ jobInfo, onComplete, onB
 
     setIsGenerating(true);
     try {
-      let result;
+      let result: { content: string };
 
       if (action === 'generate') {
-        result = await jobAgentApi.generateAnswer(
-          jobInfo,
-          currentQuestion.question,
-          currentQuestion.answer || undefined
+        const data = await graphqlClient.request<{ generateAnswer: { content: string } }>(
+          GENERATE_ANSWER_MUTATION,
+          {
+            jobInfo,
+            question: currentQuestion.question,
+            currentAnswer: currentQuestion.answer || undefined
+          }
         );
+        result = data.generateAnswer;
       } else {
-        result = await jobAgentApi.reviseAnswer(
-          jobInfo,
-          currentQuestion.question,
-          currentQuestion.answer,
-          feedback
+        const data = await graphqlClient.request<{ reviseAnswer: { content: string } }>(
+          REVISE_ANSWER_MUTATION,
+          {
+            jobInfo,
+            question: currentQuestion.question,
+            currentAnswer: currentQuestion.answer,
+            feedback
+          }
         );
+        result = data.reviseAnswer;
       }
 
       setQuestions(prev => prev.map((q, idx) => {

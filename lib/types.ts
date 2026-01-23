@@ -18,10 +18,13 @@ export interface PersonalInfo {
 }
 
 export interface Positioning {
-  headline: string;
-  summary: string;
-  targetRoles: string[];
-  targetIndustries: string[];
+  current?: string;
+  byRole?: {
+    technical_writer?: string;
+    technical_writing_manager?: string;
+    software_engineer?: string;
+    engineering_manager?: string;
+  };
 }
 
 export interface Achievement {
@@ -34,7 +37,7 @@ export interface Achievement {
 export interface Profile {
   id: string;
   personalInfo: PersonalInfo;
-  positioning: Positioning;
+  positioning?: Positioning;
   valuePropositions: string[];
   professionalMission: string;
   uniqueSellingPoints: string[];
@@ -63,7 +66,7 @@ export interface Experience {
 export interface Skill {
   id: string;
   name: string;
-  roleRelevance: string;
+  roleRelevance: string[];
   level: string;
   rating: number;
   yearsOfExperience: number;
@@ -155,7 +158,7 @@ export interface AIContext {
 }
 
 export interface AIMessage {
-  role: 'user' | 'assistant' | 'system';
+  role: "user" | "assistant" | "system";
   content: string;
 }
 

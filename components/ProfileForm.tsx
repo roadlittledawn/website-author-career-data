@@ -26,14 +26,11 @@ export default function ProfileForm({
     initialData?.uniqueSellingPoints || []
   );
   const [newUSP, setNewUSP] = useState("");
-  const [targetRoles, setTargetRoles] = useState<string[]>(
-    initialData?.positioning?.targetRoles || []
+  const [byRolePositioning, setByRolePositioning] = useState<Record<string, string>>(
+    initialData?.positioning?.byRole || {}
   );
-  const [newRole, setNewRole] = useState("");
-  const [targetIndustries, setTargetIndustries] = useState<string[]>(
-    initialData?.positioning?.targetIndustries || []
-  );
-  const [newIndustry, setNewIndustry] = useState("");
+  const [newRoleType, setNewRoleType] = useState("");
+  const [newRolePositioning, setNewRolePositioning] = useState("");
 
   const {
     register,
@@ -54,8 +51,7 @@ export default function ProfileForm({
         },
       },
       positioning: {
-        headline: initialData?.positioning?.headline || "",
-        summary: initialData?.positioning?.summary || "",
+        current: initialData?.positioning?.current || "",
       },
       professionalMission: initialData?.professionalMission || "",
     },
@@ -69,10 +65,8 @@ export default function ProfileForm({
       const profileData: Partial<Profile> = {
         personalInfo: data.personalInfo,
         positioning: {
-          headline: data.positioning.headline,
-          summary: data.positioning.summary,
-          targetRoles,
-          targetIndustries,
+          current: data.positioning.current,
+          byRole: Object.keys(byRolePositioning).length > 0 ? byRolePositioning : undefined,
         },
         valuePropositions,
         professionalMission: data.professionalMission || "",
@@ -110,26 +104,21 @@ export default function ProfileForm({
     setUniqueSellingPoints(uniqueSellingPoints.filter((_, i) => i !== index));
   };
 
-  const addTargetRole = () => {
-    if (newRole.trim()) {
-      setTargetRoles([...targetRoles, newRole.trim()]);
-      setNewRole("");
+  const addRolePositioning = () => {
+    if (newRoleType.trim() && newRolePositioning.trim()) {
+      setByRolePositioning({
+        ...byRolePositioning,
+        [newRoleType.trim()]: newRolePositioning.trim(),
+      });
+      setNewRoleType("");
+      setNewRolePositioning("");
     }
   };
 
-  const removeTargetRole = (index: number) => {
-    setTargetRoles(targetRoles.filter((_, i) => i !== index));
-  };
-
-  const addTargetIndustry = () => {
-    if (newIndustry.trim()) {
-      setTargetIndustries([...targetIndustries, newIndustry.trim()]);
-      setNewIndustry("");
-    }
-  };
-
-  const removeTargetIndustry = (index: number) => {
-    setTargetIndustries(targetIndustries.filter((_, i) => i !== index));
+  const removeRolePositioning = (roleType: string) => {
+    const updated = { ...byRolePositioning };
+    delete updated[roleType];
+    setByRolePositioning(updated);
   };
 
   return (
@@ -243,97 +232,49 @@ export default function ProfileForm({
         <h2>Professional Positioning</h2>
 
         <div className={styles.formGroup}>
-          <label htmlFor="positioning-headline">Headline *</label>
-          <input
-            id="positioning-headline"
-            type="text"
-            {...register("positioning.headline", { required: "Headline is required" })}
-            placeholder="e.g., Senior Technical Writer & Software Engineer"
-            className={errors.positioning?.headline ? styles.inputError : ""}
-          />
-          {errors.positioning?.headline && (
-            <span className={styles.errorText}>
-              {errors.positioning.headline.message}
-            </span>
-          )}
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-summary">Summary *</label>
+          <label htmlFor="positioning-current">Current Positioning</label>
           <textarea
-            id="positioning-summary"
-            {...register("positioning.summary", { required: "Summary is required" })}
-            rows={4}
-            placeholder="Your professional summary..."
-            className={errors.positioning?.summary ? styles.inputError : ""}
+            id="positioning-current"
+            {...register("positioning.current")}
+            rows={6}
+            placeholder="Your current professional positioning..."
           />
-          {errors.positioning?.summary && (
-            <span className={styles.errorText}>
-              {errors.positioning.summary.message}
-            </span>
-          )}
         </div>
 
-        <h3>Target Roles</h3>
+        <h3>Role-Specific Positioning</h3>
         <div className={styles.arrayInput}>
-          <input
-            type="text"
-            value={newRole}
-            onChange={(e) => setNewRole(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addTargetRole();
-              }
-            }}
-            placeholder="Add a target role..."
+          <select
+            value={newRoleType}
+            onChange={(e) => setNewRoleType(e.target.value)}
+            style={{ flex: 1 }}
+          >
+            <option value="">Select role type...</option>
+            <option value="technical_writer">Technical Writer</option>
+            <option value="technical_writing_manager">Technical Writing Manager</option>
+            <option value="software_engineer">Software Engineer</option>
+            <option value="engineering_manager">Engineering Manager</option>
+          </select>
+          <textarea
+            value={newRolePositioning}
+            onChange={(e) => setNewRolePositioning(e.target.value)}
+            placeholder="Positioning for this role..."
+            rows={2}
+            style={{ flex: 2 }}
           />
-          <button type="button" onClick={addTargetRole} className={styles.addBtn}>
+          <button type="button" onClick={addRolePositioning} className={styles.addBtn}>
             Add
           </button>
         </div>
 
         <div className={styles.listItems}>
-          {targetRoles.map((role, index) => (
-            <div key={index} className={styles.listItem}>
-              <span>{role}</span>
+          {Object.entries(byRolePositioning).map(([roleType, positioning]) => (
+            <div key={roleType} className={styles.listItem}>
+              <div>
+                <strong>{roleType}:</strong> {positioning}
+              </div>
               <button
                 type="button"
-                onClick={() => removeTargetRole(index)}
-                className={styles.removeBtn}
-              >
-                Remove
-              </button>
-            </div>
-          ))}
-        </div>
-
-        <h3>Target Industries</h3>
-        <div className={styles.arrayInput}>
-          <input
-            type="text"
-            value={newIndustry}
-            onChange={(e) => setNewIndustry(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addTargetIndustry();
-              }
-            }}
-            placeholder="Add a target industry..."
-          />
-          <button type="button" onClick={addTargetIndustry} className={styles.addBtn}>
-            Add
-          </button>
-        </div>
-
-        <div className={styles.listItems}>
-          {targetIndustries.map((industry, index) => (
-            <div key={index} className={styles.listItem}>
-              <span>{industry}</span>
-              <button
-                type="button"
-                onClick={() => removeTargetIndustry(index)}
+                onClick={() => removeRolePositioning(roleType)}
                 className={styles.removeBtn}
               >
                 Remove

@@ -2,8 +2,25 @@
 
 import { useState } from 'react';
 import { marked } from 'marked';
-import { jobAgentApi } from '../lib/api';
+import { gql } from 'graphql-request';
+import graphqlClient from '@/lib/graphql-client';
 import styles from './ResumeGenerator.module.css';
+
+const GENERATE_RESUME_MUTATION = gql`
+  mutation GenerateResume($jobInfo: JobInfoInput!, $additionalContext: String) {
+    generateResume(jobInfo: $jobInfo, additionalContext: $additionalContext) {
+      content
+    }
+  }
+`;
+
+const REVISE_RESUME_MUTATION = gql`
+  mutation ReviseResume($jobInfo: JobInfoInput!, $feedback: String!) {
+    reviseResume(jobInfo: $jobInfo, feedback: $feedback) {
+      content
+    }
+  }
+`;
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
 
@@ -33,12 +50,20 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
   const generateResume = async (action: 'generate' | 'revise' = 'generate') => {
     setIsGenerating(true);
     try {
-      let result;
+      let result: { content: string };
 
       if (action === 'generate') {
-        result = await jobAgentApi.generateResume(jobInfo, additionalContext);
+        const data = await graphqlClient.request<{ generateResume: { content: string } }>(
+          GENERATE_RESUME_MUTATION,
+          { jobInfo, additionalContext }
+        );
+        result = data.generateResume;
       } else {
-        result = await jobAgentApi.reviseResume(jobInfo, feedback);
+        const data = await graphqlClient.request<{ reviseResume: { content: string } }>(
+          REVISE_RESUME_MUTATION,
+          { jobInfo, feedback }
+        );
+        result = data.reviseResume;
       }
 
       setResumeDraft(result.content);

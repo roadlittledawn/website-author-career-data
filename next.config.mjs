@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Output standalone for Netlify
-  output: 'standalone',
-
   // Disable strict mode for easier migration
   reactStrictMode: true,
 

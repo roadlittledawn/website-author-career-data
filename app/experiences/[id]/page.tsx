@@ -44,7 +44,8 @@ export default async function ExperienceDetailPage({ params }: PageProps) {
     }
 
     return <ExperienceDetail experience={experience} />;
-  } catch {
+  } catch (error) {
+    console.error('Error fetching experience:', error);
     notFound();
   }
 }

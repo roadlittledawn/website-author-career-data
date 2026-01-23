@@ -21,9 +21,9 @@ const PROJECT_QUERY = gql`
       keywords
       roleTypes
       links {
-        type
         url
         linkText
+        type
       }
     }
   }

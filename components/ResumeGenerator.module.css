@@ -232,8 +232,29 @@
   transition: all 0.2s;
 }
 
-.finalizeButtonTop:hover {
+.finalizeButtonTop:hover:not(:disabled) {
   background-color: #c82333;
+}
+
+.reviseButtonTop {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  background-color: #28a745;
+  color: white;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.reviseButtonTop:hover:not(:disabled) {
+  background-color: #1e7e34;
+}
+
+.reviseButtonTop:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 .resumePreview {
@@ -324,36 +345,6 @@
   font-size: 1.1rem;
 }
 
-.feedbackForm {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.reviseButton {
-  background-color: #28a745;
-  color: white;
-}
-
-.reviseButton:hover:not(:disabled) {
-  background-color: #1e7e34;
-}
-
-.reviseButton:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
-}
-
-.finalizeButton {
-  background-color: #dc3545;
-  color: white;
-  width: 100%;
-}
-
-.finalizeButton:hover {
-  background-color: #c82333;
-}
-
 .iterations {
   border-top: 1px solid #e0e0e0;
   padding-top: 1rem;
@@ -386,11 +377,6 @@
   border-color: #007bff;
 }
 
-.actions {
-  background-color: white;
-  padding: 1rem 0;
-}
-
 @media (max-width: 1200px) {
   .splitView {
     grid-template-columns: 1fr;
@@ -403,12 +389,6 @@
   
   .controlsPanel {
     max-height: unset;
-  }
-  
-  .actions {
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
   }
 }
 
@@ -448,17 +428,5 @@
   
   .controlsPanel {
     order: 2;
-  }
-  
-  .actions {
-    position: sticky;
-    bottom: 0;
-    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
-    z-index: 10;
-  }
-  
-  .finalizeButton {
-    font-size: 1.1rem;
-    padding: 1.2rem 2rem;
   }
 }

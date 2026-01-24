@@ -193,6 +193,12 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
                   >
                     {isEditing ? 'View' : 'Edit'}
                   </button>
+                  <button
+                    onClick={handleFinalize}
+                    className={styles.finalizeButtonTop}
+                  >
+                    Finalize Resume
+                  </button>
                 </div>
               </div>
               

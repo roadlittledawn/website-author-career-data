@@ -384,7 +384,7 @@
   }
   
   .controlsPanel {
-    max-height: none;
+    max-height: unset;
   }
   
   .actions {

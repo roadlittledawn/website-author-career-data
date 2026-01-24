@@ -89,8 +89,7 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
     generateResume('generate');
   };
 
-  const handleRevise = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleRevise = () => {
     if (!feedback.trim()) return;
     generateResume('revise');
   };
@@ -193,6 +192,19 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
                   >
                     {isEditing ? 'View' : 'Edit'}
                   </button>
+                  <button
+                    onClick={handleRevise}
+                    disabled={isGenerating || !feedback.trim()}
+                    className={styles.reviseButtonTop}
+                  >
+                    {isGenerating ? 'Revising...' : 'Revise Resume'}
+                  </button>
+                  <button
+                    onClick={handleFinalize}
+                    className={styles.finalizeButtonTop}
+                  >
+                    Finalize Resume
+                  </button>
                 </div>
               </div>
               
@@ -219,31 +231,13 @@ export default function ResumeGenerator({ jobInfo, onFinalize, onBack }: ResumeG
             <div className={styles.controlsPanel}>
               <div className={styles.feedbackSection}>
                 <h4>Feedback & Revisions</h4>
-                <form onSubmit={handleRevise} className={styles.feedbackForm}>
-                  <textarea
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    placeholder="Provide feedback for revisions (e.g., 'Emphasize API documentation experience more', 'Add more quantifiable metrics', etc.)"
-                    rows={4}
-                    className={styles.textarea}
-                  />
-                  <button 
-                    type="submit" 
-                    disabled={isGenerating || !feedback.trim()}
-                    className={styles.reviseButton}
-                  >
-                    {isGenerating ? 'Revising...' : 'Revise Resume'}
-                  </button>
-                </form>
-              </div>
-
-              <div className={styles.actions}>
-                <button 
-                  onClick={handleFinalize}
-                  className={styles.finalizeButton}
-                >
-                  Finalize Resume
-                </button>
+                <textarea
+                  value={feedback}
+                  onChange={(e) => setFeedback(e.target.value)}
+                  placeholder="Provide feedback for revisions (e.g., 'Emphasize API documentation experience more', 'Add more quantifiable metrics', etc.)"
+                  rows={4}
+                  className={styles.textarea}
+                />
               </div>
 
               {iterations.length > 1 && (

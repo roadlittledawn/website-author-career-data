@@ -29,13 +29,8 @@ jobs:
       - name: Run build
         run: npm run build
         env:
-          # Dummy environment variables for build validation
-          # Real values are set in Netlify for actual deployment
-          MONGODB_URI: mongodb://localhost:27017/
-          MONGODB_DB_NAME: test-db
-          AUTH_SECRET: test-secret-for-github-actions
-          ADMIN_USERNAME: admin
-          ADMIN_PASSWORD_HASH: $2a$10$dummyhashforvalidationonly
+          NEXT_PUBLIC_GRAPHQL_ENDPOINT: ${{ secrets.NEXT_PUBLIC_GRAPHQL_ENDPOINT }}
+          NEXT_PUBLIC_API_KEY: ${{ secrets.NEXT_PUBLIC_API_KEY }}
 
       - name: Build succeeded
         if: success()

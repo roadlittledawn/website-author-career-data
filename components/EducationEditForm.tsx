@@ -5,43 +5,47 @@ import { gql } from 'graphql-request';
 import graphqlClient from '@/lib/graphql-client';
 import EducationForm from '@/components/EducationForm';
 import type { Education } from '@/lib/types';
-import styles from './new.module.css';
+import styles from '@/app/education/[id]/edit/edit.module.css';
 
-const CREATE_EDUCATION_MUTATION = gql`
-  mutation CreateEducation($input: EducationInput!) {
-    createEducation(input: $input) {
+const UPDATE_EDUCATION_MUTATION = gql`
+  mutation UpdateEducation($id: ID!, $input: EducationInput!) {
+    updateEducation(id: $id, input: $input) {
       id
       institution
       degree
       field
       graduationYear
+      relevantCoursework
     }
   }
 `;
 
-export default function NewEducationPage() {
+interface EducationEditFormProps {
+  education: Education;
+}
+
+export function EducationEditForm({ education }: EducationEditFormProps) {
   const router = useRouter();
+  const id = education.id;
 
   const handleSubmit = async (data: Partial<Education>) => {
-    const result = await graphqlClient.request<{ createEducation: Education }>(
-      CREATE_EDUCATION_MUTATION,
-      { input: data }
-    );
-    router.push(`/education/${result.createEducation.id}`);
+    await graphqlClient.request(UPDATE_EDUCATION_MUTATION, { id, input: data });
+    router.push(`/education/${id}`);
   };
 
   const handleCancel = () => {
-    router.push('/education');
+    router.push(`/education/${id}`);
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <h1>New Education</h1>
-        <p>Add a new degree or certification to your profile</p>
+        <h1>Edit Education</h1>
+        <p>{education.institution}</p>
       </div>
 
       <EducationForm
+        initialData={education}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
       />

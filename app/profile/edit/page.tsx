@@ -1,72 +1,44 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import ProfileForm from '@/components/ProfileForm';
-import { profileApi } from '@/lib/api';
+import { gql } from 'graphql-request';
+import graphqlClient from '@/lib/graphql-client';
 import type { Profile } from '@/lib/types';
-import styles from './edit.module.css';
+import { ProfileEditForm } from '@/components/ProfileEditForm';
 
-export default function EditProfilePage() {
-  const router = useRouter();
-  const [profile, setProfile] = useState<Profile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      setIsLoading(true);
-      const data = await profileApi.get();
-      setProfile(data.profile);
-      setError('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load profile');
-    } finally {
-      setIsLoading(false);
+const PROFILE_QUERY = gql`
+  query GetProfile {
+    profile {
+      id
+      personalInfo {
+        name
+        email
+        phone
+        location
+        links {
+          portfolio
+          github
+          linkedin
+        }
+      }
+      positioning {
+        current
+        byRole {
+          technical_writer
+          technical_writing_manager
+          software_engineer
+          engineering_manager
+        }
+      }
+      valuePropositions
+      professionalMission
+      uniqueSellingPoints
     }
-  };
-
-  const handleSubmit = async (data: Partial<Profile>) => {
-    await profileApi.update(data);
-    router.push('/profile');
-  };
-
-  const handleCancel = () => {
-    router.push('/profile');
-  };
-
-  if (isLoading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading profile...</div>
-      </div>
-    );
   }
+`;
 
-  if (error) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error}</div>
-      </div>
-    );
+export default async function EditProfilePage() {
+  try {
+    const { profile } = await graphqlClient.request<{ profile: Profile | null }>(PROFILE_QUERY);
+    return <ProfileEditForm profile={profile} />;
+  } catch {
+    return <ProfileEditForm profile={null} />;
   }
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Edit Profile</h1>
-        <p>Update your professional information and positioning</p>
-      </div>
-
-      <ProfileForm
-        initialData={profile || undefined}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-    </div>
-  );
 }

@@ -38,59 +38,11 @@
   min-height: 200px;
 }
 
-.loading {
-  margin-top: 0.5rem;
-  color: #666;
-  font-size: 0.9rem;
-  font-style: italic;
-}
-
 .helpText {
   margin-top: 0.5rem;
   color: #666;
   font-size: 0.85rem;
   line-height: 1.4;
-}
-
-.extractedSection {
-  margin-top: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 4px;
-  background-color: #f8f9fa;
-}
-
-.toggleButton {
-  width: 100%;
-  padding: 0.75rem;
-  background: none;
-  border: none;
-  text-align: left;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 500;
-  color: #333;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.toggleButton:hover {
-  background-color: #e9ecef;
-}
-
-.extractedContent {
-  border-top: 1px solid #e0e0e0;
-  padding: 1rem;
-  background-color: white;
-}
-
-.extractedText {
-  font-size: 0.85rem;
-  line-height: 1.5;
-  color: #555;
-  max-height: 200px;
-  overflow-y: auto;
-  white-space: pre-wrap;
 }
 
 .submitButton {

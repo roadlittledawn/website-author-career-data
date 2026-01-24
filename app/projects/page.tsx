@@ -3,9 +3,34 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { projectsApi } from "@/lib/api";
+import { gql } from "graphql-request";
+import graphqlClient from "@/lib/graphql-client";
 import type { Project } from "@/lib/types";
 import styles from "./projects.module.css";
+
+const PROJECTS_QUERY = gql`
+  query GetProjects($filter: ProjectFilter) {
+    projects(filter: $filter) {
+      id
+      name
+      type
+      date
+      featured
+      overview
+      technologies
+      roleTypes
+    }
+  }
+`;
+
+const DELETE_PROJECT_MUTATION = gql`
+  mutation DeleteProject($id: ID!) {
+    deleteProject(id: $id) {
+      success
+      id
+    }
+  }
+`;
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState<Project[]>([]);
@@ -26,14 +51,28 @@ export default function ProjectsPage() {
   const loadProjects = async () => {
     try {
       setIsLoading(true);
-      const params: any = {};
+      const params: Record<string, string | boolean> = {};
       if (filter.type) params.type = filter.type;
       if (filter.roleType) params.roleType = filter.roleType;
       if (filter.featured) params.featured = filter.featured === "true";
-      if (filter.search) params.search = filter.search;
 
-      const data = await projectsApi.list(params);
-      setProjects(data.projects || []);
+      const { projects: data } = await graphqlClient.request<{ projects: Project[] }>(
+        PROJECTS_QUERY,
+        { filter: Object.keys(params).length > 0 ? params : undefined }
+      );
+
+      // Client-side search filter
+      let filtered = data || [];
+      if (filter.search) {
+        const searchLower = filter.search.toLowerCase();
+        filtered = filtered.filter(
+          (p) =>
+            p.name.toLowerCase().includes(searchLower) ||
+            p.overview?.toLowerCase().includes(searchLower)
+        );
+      }
+
+      setProjects(filtered);
       setError("");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to load projects");
@@ -49,14 +88,14 @@ export default function ProjectsPage() {
     }
 
     try {
-      await projectsApi.delete(id);
-      setProjects(projects.filter((p) => p._id !== id));
+      await graphqlClient.request(DELETE_PROJECT_MUTATION, { id });
+      setProjects(projects.filter((p) => p.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to delete project");
     }
   };
 
-  const formatDate = (date: Date | undefined) => {
+  const formatDate = (date: string | Date | undefined) => {
     if (!date) return "N/A";
     return new Date(date).toLocaleDateString("en-US", {
       year: "numeric",
@@ -138,7 +177,7 @@ export default function ProjectsPage() {
       ) : (
         <div className={styles.projectGrid}>
           {projects.map((project) => (
-            <div key={project._id} className={styles.projectCard}>
+            <div key={project.id} className={styles.projectCard}>
               <div className={styles.cardHeader}>
                 <h3>{project.name}</h3>
                 {project.featured && (
@@ -170,19 +209,19 @@ export default function ProjectsPage() {
 
               <div className={styles.cardActions}>
                 <Link
-                  href={`/projects/${project._id}`}
+                  href={`/projects/${project.id}`}
                   className={styles.viewBtn}
                 >
                   View
                 </Link>
                 <Link
-                  href={`/projects/${project._id}/edit`}
+                  href={`/projects/${project.id}/edit`}
                   className={styles.editBtn}
                 >
                   Edit
                 </Link>
                 <button
-                  onClick={() => handleDelete(project._id!)}
+                  onClick={() => handleDelete(project.id!)}
                   className={styles.deleteBtn}
                 >
                   Delete

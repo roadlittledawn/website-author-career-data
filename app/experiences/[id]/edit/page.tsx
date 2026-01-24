@@ -1,74 +1,50 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import ExperienceForm from '@/components/ExperienceForm';
-import { experiencesApi } from '@/lib/api';
+import { gql } from 'graphql-request';
+import { notFound } from 'next/navigation';
+import graphqlClient from '@/lib/graphql-client';
 import type { Experience } from '@/lib/types';
-import styles from './edit.module.css';
+import { ExperienceEditForm } from '@/components/ExperienceEditForm';
 
-export default function EditExperiencePage() {
-  const router = useRouter();
-  const params = useParams();
-  const id = params.id as string;
-  const [experience, setExperience] = useState<Experience | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchExperience();
-  }, [id]);
-
-  const fetchExperience = async () => {
-    try {
-      setIsLoading(true);
-      const data = await experiencesApi.get(id);
-      setExperience(data.experience);
-      setError('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load experience');
-    } finally {
-      setIsLoading(false);
+const EXPERIENCE_QUERY = gql`
+  query GetExperience($id: ID!) {
+    experience(id: $id) {
+      id
+      company
+      location
+      title
+      industry
+      startDate
+      endDate
+      roleTypes
+      responsibilities
+      achievements {
+        description
+        metrics
+        impact
+      }
+      technologies
+      featured
+      organizations
+      crossFunctional
     }
-  };
-
-  const handleSubmit = async (data: Partial<Experience>) => {
-    await experiencesApi.update(id, data);
-    router.push(`/experiences/${id}`);
-  };
-
-  const handleCancel = () => {
-    router.push(`/experiences/${id}`);
-  };
-
-  if (isLoading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading experience...</div>
-      </div>
-    );
   }
+`;
 
-  if (error || !experience) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error || 'Experience not found'}</div>
-      </div>
-    );
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditExperiencePage({ params }: PageProps) {
+  const { id } = await params;
+
+  try {
+    const { experience } = await graphqlClient.request<{ experience: Experience | null }>(EXPERIENCE_QUERY, { id });
+
+    if (!experience) {
+      notFound();
+    }
+
+    return <ExperienceEditForm experience={experience} />;
+  } catch {
+    notFound();
   }
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Edit Experience</h1>
-        <p>{experience.title} at {experience.company}</p>
-      </div>
-
-      <ExperienceForm
-        initialData={experience}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-    </div>
-  );
 }

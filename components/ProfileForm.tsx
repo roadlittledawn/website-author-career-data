@@ -26,6 +26,11 @@ export default function ProfileForm({
     initialData?.uniqueSellingPoints || []
   );
   const [newUSP, setNewUSP] = useState("");
+  const [byRolePositioning, setByRolePositioning] = useState<Record<string, string>>(
+    initialData?.positioning?.byRole || {}
+  );
+  const [newRoleType, setNewRoleType] = useState("");
+  const [newRolePositioning, setNewRolePositioning] = useState("");
 
   const {
     register,
@@ -47,12 +52,6 @@ export default function ProfileForm({
       },
       positioning: {
         current: initialData?.positioning?.current || "",
-        byRole: {
-          technical_writer: initialData?.positioning?.byRole?.technical_writer || "",
-          technical_writing_manager: initialData?.positioning?.byRole?.technical_writing_manager || "",
-          software_engineer: initialData?.positioning?.byRole?.software_engineer || "",
-          engineering_manager: initialData?.positioning?.byRole?.engineering_manager || "",
-        },
       },
       professionalMission: initialData?.professionalMission || "",
     },
@@ -65,9 +64,12 @@ export default function ProfileForm({
     try {
       const profileData: Partial<Profile> = {
         personalInfo: data.personalInfo,
-        positioning: data.positioning,
+        positioning: {
+          current: data.positioning.current,
+          byRole: Object.keys(byRolePositioning).length > 0 ? byRolePositioning : undefined,
+        },
         valuePropositions,
-        professionalMission: data.professionalMission || undefined,
+        professionalMission: data.professionalMission || "",
         uniqueSellingPoints,
       };
 
@@ -100,6 +102,23 @@ export default function ProfileForm({
 
   const removeUniqueSellingPoint = (index: number) => {
     setUniqueSellingPoints(uniqueSellingPoints.filter((_, i) => i !== index));
+  };
+
+  const addRolePositioning = () => {
+    if (newRoleType.trim() && newRolePositioning.trim()) {
+      setByRolePositioning({
+        ...byRolePositioning,
+        [newRoleType.trim()]: newRolePositioning.trim(),
+      });
+      setNewRoleType("");
+      setNewRolePositioning("");
+    }
+  };
+
+  const removeRolePositioning = (roleType: string) => {
+    const updated = { ...byRolePositioning };
+    delete updated[roleType];
+    setByRolePositioning(updated);
   };
 
   return (
@@ -213,55 +232,55 @@ export default function ProfileForm({
         <h2>Professional Positioning</h2>
 
         <div className={styles.formGroup}>
-          <label htmlFor="positioning-current">Current Positioning Statement</label>
+          <label htmlFor="positioning-current">Current Positioning</label>
           <textarea
             id="positioning-current"
             {...register("positioning.current")}
-            rows={3}
+            rows={6}
             placeholder="Your current professional positioning..."
           />
         </div>
 
         <h3>Role-Specific Positioning</h3>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-tw">Technical Writer</label>
+        <div className={styles.arrayInput}>
+          <select
+            value={newRoleType}
+            onChange={(e) => setNewRoleType(e.target.value)}
+            style={{ flex: 1 }}
+          >
+            <option value="">Select role type...</option>
+            <option value="technical_writer">Technical Writer</option>
+            <option value="technical_writing_manager">Technical Writing Manager</option>
+            <option value="software_engineer">Software Engineer</option>
+            <option value="engineering_manager">Engineering Manager</option>
+          </select>
           <textarea
-            id="positioning-tw"
-            {...register("positioning.byRole.technical_writer")}
+            value={newRolePositioning}
+            onChange={(e) => setNewRolePositioning(e.target.value)}
+            placeholder="Positioning for this role..."
             rows={2}
-            placeholder="Your positioning as a technical writer..."
+            style={{ flex: 2 }}
           />
+          <button type="button" onClick={addRolePositioning} className={styles.addBtn}>
+            Add
+          </button>
         </div>
 
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-twm">Technical Writing Manager</label>
-          <textarea
-            id="positioning-twm"
-            {...register("positioning.byRole.technical_writing_manager")}
-            rows={2}
-            placeholder="Your positioning as a technical writing manager..."
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-se">Software Engineer</label>
-          <textarea
-            id="positioning-se"
-            {...register("positioning.byRole.software_engineer")}
-            rows={2}
-            placeholder="Your positioning as a software engineer..."
-          />
-        </div>
-
-        <div className={styles.formGroup}>
-          <label htmlFor="positioning-em">Engineering Manager</label>
-          <textarea
-            id="positioning-em"
-            {...register("positioning.byRole.engineering_manager")}
-            rows={2}
-            placeholder="Your positioning as an engineering manager..."
-          />
+        <div className={styles.listItems}>
+          {Object.entries(byRolePositioning).map(([roleType, positioning]) => (
+            <div key={roleType} className={styles.listItem}>
+              <div>
+                <strong>{roleType}:</strong> {positioning}
+              </div>
+              <button
+                type="button"
+                onClick={() => removeRolePositioning(roleType)}
+                className={styles.removeBtn}
+              >
+                Remove
+              </button>
+            </div>
+          ))}
         </div>
       </section>
 

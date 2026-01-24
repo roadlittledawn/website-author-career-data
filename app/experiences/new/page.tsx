@@ -1,30 +1,31 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { gql } from 'graphql-request';
+import graphqlClient from '@/lib/graphql-client';
 import ExperienceForm from '@/components/ExperienceForm';
-import { authenticatedFetch } from '@/lib/auth';
 import type { Experience } from '@/lib/types';
 import styles from './new.module.css';
+
+const CREATE_EXPERIENCE_MUTATION = gql`
+  mutation CreateExperience($input: ExperienceInput!) {
+    createExperience(input: $input) {
+      id
+      company
+      title
+    }
+  }
+`;
 
 export default function NewExperiencePage() {
   const router = useRouter();
 
   const handleSubmit = async (data: Partial<Experience>) => {
-    const response = await authenticatedFetch('/.netlify/functions/experiences', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.error || 'Failed to create experience');
-    }
-
-    const result = await response.json();
-    router.push(`/experiences/${result.experience._id}`);
+    const result = await graphqlClient.request<{ createExperience: Experience }>(
+      CREATE_EXPERIENCE_MUTATION,
+      { input: data }
+    );
+    router.push(`/experiences/${result.createExperience.id}`);
   };
 
   const handleCancel = () => {

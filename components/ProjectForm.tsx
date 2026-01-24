@@ -51,7 +51,7 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
       const projectData: Partial<Project> = {
         name: data.name,
         type: data.type as ProjectType,
-        date: data.date ? new Date(data.date) : undefined,
+        date: data.date || undefined,
         featured: data.featured,
         overview: data.overview,
         challenge: data.challenge || undefined,

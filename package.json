@@ -1,24 +1,23 @@
 {
   "name": "career-data-admin",
   "version": "2.0.0",
-  "description": "Next.js admin interface for managing career data in MongoDB with AI writing assistant",
+  "description": "Next.js admin interface for managing career data via GraphQL API",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "netlify dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "netlify-dev": "netlify dev"
+    "lint": "next lint"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.32.0",
+    "@anthropic-ai/sdk": "^0.71.2",
     "@tanstack/react-query": "^5.28.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.0",
-    "dotenv": "^17.2.3",
+    "graphql": "^16.12.0",
+    "graphql-request": "^7.4.0",
     "jsonwebtoken": "^9.0.0",
     "marked": "^17.0.1",
-    "mongodb": "^6.0.0",
     "next": "14.2.0",
     "react": "^18.3.0",
     "react-dom": "^18.3.0",
@@ -33,7 +32,7 @@
     "@types/react-dom": "^18.3.0",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.0",
-    "netlify-cli": "^17.0.0",
+    "netlify-cli": "^23.13.5",
     "typescript": "^5.4.0"
   },
   "engines": {

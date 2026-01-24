@@ -2,7 +2,25 @@
 
 import { useState } from 'react';
 import { marked } from 'marked';
+import { gql } from 'graphql-request';
+import graphqlClient from '@/lib/graphql-client';
 import styles from './ApplicationQuestionsAssistant.module.css';
+
+const GENERATE_ANSWER_MUTATION = gql`
+  mutation GenerateAnswer($jobInfo: JobInfoInput!, $question: String!, $currentAnswer: String) {
+    generateAnswer(jobInfo: $jobInfo, question: $question, currentAnswer: $currentAnswer) {
+      content
+    }
+  }
+`;
+
+const REVISE_ANSWER_MUTATION = gql`
+  mutation ReviseAnswer($jobInfo: JobInfoInput!, $question: String!, $currentAnswer: String!, $feedback: String!) {
+    reviseAnswer(jobInfo: $jobInfo, question: $question, currentAnswer: $currentAnswer, feedback: $feedback) {
+      content
+    }
+  }
+`;
 
 type JobType = 'technical-writer' | 'technical-writing-manager' | 'software-engineer' | 'software-engineering-manager';
 
@@ -57,39 +75,37 @@ export default function ApplicationQuestionsAssistant({ jobInfo, onComplete, onB
 
     setIsGenerating(true);
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 90000);
+      let result: { content: string };
 
-      const response = await fetch('/.netlify/functions/job-agent-question', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('career_admin_token')}`
-        },
-        body: JSON.stringify({
-          jobInfo,
-          question: currentQuestion.question,
-          currentAnswer: currentQuestion.answer,
-          feedback: action === 'revise' ? feedback : undefined,
-          action
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-
-      if (!response.ok) {
-        throw new Error('Failed to generate answer');
+      if (action === 'generate') {
+        const data = await graphqlClient.request<{ generateAnswer: { content: string } }>(
+          GENERATE_ANSWER_MUTATION,
+          {
+            jobInfo,
+            question: currentQuestion.question,
+            currentAnswer: currentQuestion.answer || undefined
+          }
+        );
+        result = data.generateAnswer;
+      } else {
+        const data = await graphqlClient.request<{ reviseAnswer: { content: string } }>(
+          REVISE_ANSWER_MUTATION,
+          {
+            jobInfo,
+            question: currentQuestion.question,
+            currentAnswer: currentQuestion.answer,
+            feedback
+          }
+        );
+        result = data.reviseAnswer;
       }
-
-      const data = await response.json();
 
       setQuestions(prev => prev.map((q, idx) => {
         if (idx === currentQuestionIndex) {
           return {
             ...q,
-            answer: data.answer,
-            iterations: action === 'generate' ? [data.answer] : [...q.iterations, data.answer]
+            answer: result.content,
+            iterations: action === 'generate' ? [result.content] : [...q.iterations, result.content]
           };
         }
         return q;
@@ -98,11 +114,7 @@ export default function ApplicationQuestionsAssistant({ jobInfo, onComplete, onB
       setFeedback('');
     } catch (error) {
       console.error('Answer generation error:', error);
-      if (error instanceof Error && error.name === 'AbortError') {
-        alert('Request timed out after 90 seconds. Please try again.');
-      } else {
-        alert('Failed to generate answer. Please try again.');
-      }
+      alert('Failed to generate answer. Please try again.');
     } finally {
       setIsGenerating(false);
     }

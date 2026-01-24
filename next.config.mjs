@@ -1,14 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Output standalone for Netlify
-  output: 'standalone',
-
   // Disable strict mode for easier migration
   reactStrictMode: true,
 
   // Environment variables to expose to the browser
   env: {
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
+    NEXT_PUBLIC_API_KEY: process.env.NEXT_PUBLIC_API_KEY || "",
+    NEXT_PUBLIC_GRAPHQL_ENDPOINT:
+      process.env.NEXT_PUBLIC_GRAPHQL_ENDPOINT ||
+      "https://ID.lambda-url.REGION.on.aws/graphql",
   },
 
   // Rewrites to ensure Netlify functions work
@@ -16,8 +16,8 @@ const nextConfig = {
     return {
       beforeFiles: [
         {
-          source: '/.netlify/functions/:path*',
-          destination: 'http://localhost:9999/.netlify/functions/:path*',
+          source: "/.netlify/functions/:path*",
+          destination: "http://localhost:9999/.netlify/functions/:path*",
         },
       ],
     };

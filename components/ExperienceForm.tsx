@@ -85,8 +85,8 @@ export default function ExperienceForm({
         location: data.location,
         title: data.title,
         industry: data.industry || undefined,
-        startDate: new Date(data.startDate),
-        endDate: data.endDate ? new Date(data.endDate) : null,
+        startDate: data.startDate,
+        endDate: data.endDate || undefined,
         organizations: organizations.length > 0 ? organizations : undefined,
         roleTypes: data.roleTypes,
         responsibilities,
@@ -152,7 +152,7 @@ export default function ExperienceForm({
   const addAchievement = () => {
     setAchievements([
       ...achievements,
-      { description: "", impact: "", keywords: [] },
+      { description: "", impact: "" },
     ]);
   };
 

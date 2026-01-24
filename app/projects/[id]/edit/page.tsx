@@ -1,81 +1,50 @@
-'use client';
-
-import { useState, useEffect } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import ProjectForm from '@/components/ProjectForm';
-import { projectsApi } from '@/lib/api';
+import { gql } from 'graphql-request';
+import { notFound } from 'next/navigation';
+import graphqlClient from '@/lib/graphql-client';
 import type { Project } from '@/lib/types';
-import styles from './edit.module.css';
+import { ProjectEditForm } from '@/components/ProjectEditForm';
 
-export default function EditProjectPage() {
-  const [project, setProject] = useState<Project | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState('');
-  const router = useRouter();
-  const params = useParams();
-  const projectId = params.id as string;
-
-  useEffect(() => {
-    loadProject();
-  }, [projectId]);
-
-  const loadProject = async () => {
-    try {
-      setIsLoading(true);
-      const data = await projectsApi.get(projectId);
-      setProject(data.project);
-      setError('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load project');
-    } finally {
-      setIsLoading(false);
+const PROJECT_QUERY = gql`
+  query GetProject($id: ID!) {
+    project(id: $id) {
+      id
+      name
+      type
+      date
+      featured
+      overview
+      challenge
+      approach
+      outcome
+      impact
+      technologies
+      keywords
+      roleTypes
+      links {
+        type
+        url
+        linkText
+      }
     }
-  };
+  }
+`;
 
-  const handleSubmit = async (data: Partial<Project>) => {
-    try {
-      await projectsApi.update(projectId, data);
-      router.push(`/projects/${projectId}`);
-    } catch (error) {
-      throw error;
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditProjectPage({ params }: PageProps) {
+  const { id } = await params;
+
+  try {
+    const { project } = await graphqlClient.request<{ project: Project | null }>(PROJECT_QUERY, { id });
+
+    if (!project) {
+      notFound();
     }
-  };
 
-  const handleCancel = () => {
-    router.push(`/projects/${projectId}`);
-  };
-
-  if (isLoading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading project...</div>
-      </div>
-    );
+    return <ProjectEditForm project={project} />;
+  } catch {
+    notFound();
   }
-
-  if (error || !project) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error || 'Project not found'}</div>
-        <button onClick={() => router.push('/projects')} className={styles.backBtn}>
-          Back to Projects
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <div className={styles.container}>
-      <div className={styles.header}>
-        <h1>Edit Project</h1>
-        <p>Update {project.name}</p>
-      </div>
-
-      <ProjectForm
-        initialData={project}
-        onSubmit={handleSubmit}
-        onCancel={handleCancel}
-      />
-    </div>
-  );
 }

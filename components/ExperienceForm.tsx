@@ -647,17 +647,17 @@ export default function ExperienceForm({
 
       {/* Form Actions */}
       <div className={styles.actions}>
-        <Button
+        <button
           type="button"
           onClick={onCancel}
-          variant="secondary"
+          className={styles.cancelBtn}
           disabled={isSubmitting}
         >
           Cancel
-        </Button>
-        <Button
+        </button>
+        <button
           type="submit"
-          variant="primary"
+          className={styles.submitBtn}
           disabled={
             isSubmitting ||
             technologies.length === 0 ||
@@ -669,7 +669,7 @@ export default function ExperienceForm({
             : initialData
             ? "Update Experience"
             : "Create Experience"}
-        </Button>
+        </button>
       </div>
 
       {/* Floating AI Assistant Button */}

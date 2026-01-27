@@ -73,6 +73,7 @@ export interface Skill {
   tags: string[];
   keywords: string[];
   iconName?: string;
+  featured: boolean;
   createdAt: string;
   updatedAt: string;
 }

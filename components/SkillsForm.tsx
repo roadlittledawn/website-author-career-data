@@ -32,6 +32,7 @@ export default function SkillsForm({
   const [keywords, setKeywords] = useState<string[]>(initialData?.keywords || []);
   const [newKeyword, setNewKeyword] = useState("");
   const [roleRelevance, setRoleRelevance] = useState<string[]>(initialData?.roleRelevance || []);
+  const [featured, setFeatured] = useState<boolean>(initialData?.featured || false);
 
   const {
     register,
@@ -62,6 +63,7 @@ export default function SkillsForm({
         tags: tags,
         iconName: data.iconName || undefined,
         keywords: keywords,
+        featured: featured,
       };
 
       await onSubmit(skillData);
@@ -222,6 +224,23 @@ export default function SkillsForm({
             </label>
           ))}
         </div>
+      </section>
+
+      {/* Featured Section */}
+      <section className={styles.section}>
+        <h2>Featured Skill</h2>
+        <p className={styles.sectionDesc}>
+          Featured skills appear on role-specific home pages (Technical Writing, Engineering) and represent your strongest or most relevant skills today.
+        </p>
+
+        <label className={styles.checkbox}>
+          <input
+            type="checkbox"
+            checked={featured}
+            onChange={(e) => setFeatured(e.target.checked)}
+          />
+          Mark as featured skill
+        </label>
       </section>
 
       {/* Tags Section */}

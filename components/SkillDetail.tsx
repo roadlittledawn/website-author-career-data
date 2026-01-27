@@ -81,6 +81,10 @@ export function SkillDetail({ skill }: SkillDetailProps) {
               <p>{skill.iconName}</p>
             </div>
           )}
+          <div className={styles.infoItem}>
+            <label>Featured</label>
+            <p>{skill.featured ? '⭐ Yes' : 'No'}</p>
+          </div>
         </div>
       </section>
 

@@ -12,6 +12,7 @@ const EXPERIENCE_QUERY = gql`
       location
       title
       industry
+      summary
       startDate
       endDate
       roleTypes

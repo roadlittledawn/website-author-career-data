@@ -70,6 +70,14 @@ export function ExperienceDetail({ experience }: ExperienceDetailProps) {
           )}
         </div>
 
+        {/* Summary */}
+        {experience.summary && (
+          <div className={styles.section}>
+            <h2>Summary</h2>
+            <p className={styles.summary}>{experience.summary}</p>
+          </div>
+        )}
+
         {/* Role Types */}
         <div className={styles.section}>
           <h2>Role Types</h2>

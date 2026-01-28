@@ -50,6 +50,7 @@ export interface Experience {
   location: string;
   title: string;
   industry?: string;
+  summary?: string;
   startDate: string;
   endDate?: string;
   roleTypes: string[];

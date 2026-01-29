@@ -1,31 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { gql } from 'graphql-request';
-import graphqlClient from '@/lib/graphql-client';
 import ProjectForm from '@/components/ProjectForm';
 import type { Project } from '@/lib/types';
 import styles from '@/app/projects/[id]/edit/edit.module.css';
-
-const UPDATE_PROJECT_MUTATION = gql`
-  mutation UpdateProject($id: ID!, $input: ProjectInput!) {
-    updateProject(id: $id, input: $input) {
-      id
-      name
-      type
-      date
-      featured
-      overview
-      challenge
-      approach
-      outcome
-      impact
-      technologies
-      keywords
-      roleTypes
-    }
-  }
-`;
+import { updateProject } from '@/app/projects/actions';
 
 interface ProjectEditFormProps {
   project: Project;
@@ -36,7 +15,7 @@ export function ProjectEditForm({ project }: ProjectEditFormProps) {
   const projectId = project.id;
 
   const handleSubmit = async (data: Partial<Project>) => {
-    await graphqlClient.request(UPDATE_PROJECT_MUTATION, { id: projectId, input: data });
+    await updateProject(projectId, data);
     router.push(`/projects/${projectId}`);
   };
 

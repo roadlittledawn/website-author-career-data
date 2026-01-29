@@ -21,9 +21,11 @@ const EXPERIENCE_QUERY = gql`
         description
         metrics
         impact
+        keywords
       }
       technologies
       featured
+      displayOrder
       organizations
       crossFunctional
     }

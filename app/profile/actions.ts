@@ -1,11 +1,13 @@
+'use server';
+
+import { revalidatePath } from 'next/cache';
 import { gql } from 'graphql-request';
 import graphqlClient from '@/lib/graphql-client';
 import type { Profile } from '@/lib/types';
-import { ProfileEditForm } from '@/components/ProfileEditForm';
 
-const PROFILE_QUERY = gql`
-  query GetProfile {
-    profile {
+const UPDATE_PROFILE_MUTATION = gql`
+  mutation UpdateProfile($input: ProfileInput!) {
+    updateProfile(input: $input) {
       id
       personalInfo {
         name
@@ -35,11 +37,14 @@ const PROFILE_QUERY = gql`
   }
 `;
 
-export default async function EditProfilePage() {
-  try {
-    const { profile } = await graphqlClient.request<{ profile: Profile | null }>(PROFILE_QUERY);
-    return <ProfileEditForm profile={profile} />;
-  } catch {
-    return <ProfileEditForm profile={null} />;
-  }
+export async function updateProfile(input: Partial<Profile>) {
+  const result = await graphqlClient.request<{ updateProfile: Profile }>(
+    UPDATE_PROFILE_MUTATION,
+    { input }
+  );
+
+  revalidatePath('/profile');
+  revalidatePath('/profile/edit');
+
+  return result.updateProfile;
 }

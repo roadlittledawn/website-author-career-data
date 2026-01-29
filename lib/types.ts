@@ -31,6 +31,7 @@ export interface Achievement {
   description: string;
   metrics?: string;
   impact?: string;
+  keywords?: string[];
 }
 
 // Entity Types
@@ -59,6 +60,7 @@ export interface Experience {
   technologies: string[];
   organizations?: string[];
   crossFunctional?: string[];
+  displayOrder: number;
   featured: boolean;
   createdAt: string;
   updatedAt: string;

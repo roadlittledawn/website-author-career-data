@@ -26,7 +26,6 @@ const UPDATE_EDUCATION_MUTATION = gql`
       field
       graduationYear
       relevantCoursework
-      displayOrder
     }
   }
 `;

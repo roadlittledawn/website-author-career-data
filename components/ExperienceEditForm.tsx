@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { gql } from 'graphql-request';
-import graphqlClient from '@/lib/graphql-client';
-import ExperienceForm from '@/components/ExperienceForm';
-import type { Experience } from '@/lib/types';
-import styles from '@/app/experiences/[id]/edit/edit.module.css';
+import { useRouter } from "next/navigation";
+import { gql } from "graphql-request";
+import graphqlClient from "@/lib/graphql-client";
+import ExperienceForm from "@/components/ExperienceForm";
+import type { Experience } from "@/lib/types";
+import styles from "@/app/experiences/[id]/edit/edit.module.css";
 
 const UPDATE_EXPERIENCE_MUTATION = gql`
   mutation UpdateExperience($id: ID!, $input: ExperienceInput!) {
@@ -44,7 +44,10 @@ export function ExperienceEditForm({ experience }: ExperienceEditFormProps) {
   const id = experience.id;
 
   const handleSubmit = async (data: Partial<Experience>) => {
-    await graphqlClient.request(UPDATE_EXPERIENCE_MUTATION, { id, input: data });
+    await graphqlClient.request(UPDATE_EXPERIENCE_MUTATION, {
+      id,
+      input: data,
+    });
     router.refresh();
     router.push(`/experiences/${id}`);
   };
@@ -57,7 +60,9 @@ export function ExperienceEditForm({ experience }: ExperienceEditFormProps) {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1>Edit Experience</h1>
-        <p>{experience.title} at {experience.company}</p>
+        <p>
+          {experience.title} at {experience.company}
+        </p>
       </div>
 
       <ExperienceForm

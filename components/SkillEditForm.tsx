@@ -1,28 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { gql } from 'graphql-request';
-import graphqlClient from '@/lib/graphql-client';
 import SkillsForm from '@/components/SkillsForm';
 import type { Skill } from '@/lib/types';
 import styles from '@/app/skills/[id]/edit/edit.module.css';
-
-const UPDATE_SKILL_MUTATION = gql`
-  mutation UpdateSkill($id: ID!, $input: SkillInput!) {
-    updateSkill(id: $id, input: $input) {
-      id
-      name
-      level
-      rating
-      yearsOfExperience
-      roleRelevance
-      iconName
-      tags
-      keywords
-      featured
-    }
-  }
-`;
+import { updateSkill } from '@/app/skills/actions';
 
 interface SkillEditFormProps {
   skill: Skill;
@@ -33,8 +15,7 @@ export function SkillEditForm({ skill }: SkillEditFormProps) {
   const id = skill.id;
 
   const handleSubmit = async (data: Partial<Skill>) => {
-    await graphqlClient.request(UPDATE_SKILL_MUTATION, { id, input: data });
-    router.refresh();
+    await updateSkill(id, data);
     router.push(`/skills/${id}`);
   };
 

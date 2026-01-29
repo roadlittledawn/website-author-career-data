@@ -70,6 +70,7 @@ export default function ExperienceForm({
         : "",
       featured: initialData?.featured || false,
       roleTypes: initialData?.roleTypes || [],
+      displayOrder: initialData?.displayOrder ?? 0,
     },
   });
 
@@ -81,6 +82,14 @@ export default function ExperienceForm({
     const crossFunctional = optionsToStrings(selectedCrossFunctional);
 
     try {
+      // Ensure achievements have keywords field (required by schema)
+      const processedAchievements = achievements.map((a) => ({
+        description: a.description,
+        metrics: a.metrics || undefined,
+        impact: a.impact || undefined,
+        keywords: a.keywords || [],
+      }));
+
       const experienceData: Partial<Experience> = {
         company: data.company,
         location: data.location,
@@ -89,13 +98,13 @@ export default function ExperienceForm({
         summary: data.summary || undefined,
         startDate: data.startDate,
         endDate: data.endDate || undefined,
-        organizations: organizations.length > 0 ? organizations : undefined,
+        organizations: organizations,
         roleTypes: data.roleTypes,
         responsibilities,
-        achievements: achievements.length > 0 ? achievements : undefined,
+        achievements: processedAchievements,
         technologies,
-        crossFunctional:
-          crossFunctional.length > 0 ? crossFunctional : undefined,
+        crossFunctional: crossFunctional,
+        displayOrder: parseInt(data.displayOrder) || 0,
         featured: data.featured,
       };
 
@@ -154,7 +163,7 @@ export default function ExperienceForm({
   const addAchievement = () => {
     setAchievements([
       ...achievements,
-      { description: "", impact: "" },
+      { description: "", impact: "", keywords: [] },
     ]);
   };
 

@@ -24,10 +24,12 @@ const UPDATE_EXPERIENCE_MUTATION = gql`
         description
         metrics
         impact
+        keywords
       }
       technologies
       organizations
       crossFunctional
+      displayOrder
       featured
     }
   }

@@ -59,7 +59,7 @@ export default function SkillsForm({
         roleRelevance: roleRelevance,
         level: data.level,
         rating: parseInt(data.rating),
-        yearsOfExperience: parseFloat(data.yearsOfExperience),
+        yearsOfExperience: parseInt(data.yearsOfExperience) || 0,
         tags: tags,
         iconName: data.iconName || undefined,
         keywords: keywords,

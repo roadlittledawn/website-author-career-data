@@ -1,24 +1,10 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { gql } from 'graphql-request';
-import graphqlClient from '@/lib/graphql-client';
 import EducationForm from '@/components/EducationForm';
 import type { Education } from '@/lib/types';
 import styles from '@/app/education/[id]/edit/edit.module.css';
-
-const UPDATE_EDUCATION_MUTATION = gql`
-  mutation UpdateEducation($id: ID!, $input: EducationInput!) {
-    updateEducation(id: $id, input: $input) {
-      id
-      institution
-      degree
-      field
-      graduationYear
-      relevantCoursework
-    }
-  }
-`;
+import { updateEducation } from '@/app/education/actions';
 
 interface EducationEditFormProps {
   education: Education;
@@ -29,7 +15,7 @@ export function EducationEditForm({ education }: EducationEditFormProps) {
   const id = education.id;
 
   const handleSubmit = async (data: Partial<Education>) => {
-    await graphqlClient.request(UPDATE_EDUCATION_MUTATION, { id, input: data });
+    await updateEducation(id, data);
     router.push(`/education/${id}`);
   };
 

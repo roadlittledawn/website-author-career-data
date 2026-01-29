@@ -16,6 +16,7 @@ const PROFILE_QUERY = gql`
           portfolio
           github
           linkedin
+          writingSamples
         }
       }
       positioning {

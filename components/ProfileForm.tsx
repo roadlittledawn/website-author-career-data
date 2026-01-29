@@ -66,7 +66,7 @@ export default function ProfileForm({
         personalInfo: data.personalInfo,
         positioning: {
           current: data.positioning.current,
-          byRole: Object.keys(byRolePositioning).length > 0 ? byRolePositioning : undefined,
+          byRole: byRolePositioning,
         },
         valuePropositions,
         professionalMission: data.professionalMission || "",

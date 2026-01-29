@@ -33,7 +33,7 @@ A Next.js admin interface for managing professional career data via GraphQL API.
 
 **Option 1: Use Production API**
 ```env
-NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://ID.lambda-url.REGION.on.aws/graphql
 NEXT_PUBLIC_API_KEY=your-api-key
 ```
 

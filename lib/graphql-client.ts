@@ -16,11 +16,6 @@ export const graphqlClient = new GraphQLClient(GRAPHQL_ENDPOINT, {
   headers: {
     'X-API-Key': API_KEY,
   },
-  fetch: (url, options) =>
-    fetch(url, {
-      ...options,
-      cache: 'no-store',
-    }),
 });
 
 export default graphqlClient;

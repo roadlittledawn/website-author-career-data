@@ -16,8 +16,10 @@ const UPDATE_SKILL_MUTATION = gql`
       rating
       yearsOfExperience
       roleRelevance
+      iconName
       tags
       keywords
+      featured
     }
   }
 `;
@@ -32,6 +34,7 @@ export function SkillEditForm({ skill }: SkillEditFormProps) {
 
   const handleSubmit = async (data: Partial<Skill>) => {
     await graphqlClient.request(UPDATE_SKILL_MUTATION, { id, input: data });
+    router.refresh();
     router.push(`/skills/${id}`);
   };
 

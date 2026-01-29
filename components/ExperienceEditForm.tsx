@@ -15,6 +15,7 @@ const UPDATE_EXPERIENCE_MUTATION = gql`
       location
       title
       industry
+      summary
       startDate
       endDate
       roleTypes
@@ -25,6 +26,8 @@ const UPDATE_EXPERIENCE_MUTATION = gql`
         impact
       }
       technologies
+      organizations
+      crossFunctional
       featured
     }
   }
@@ -40,6 +43,7 @@ export function ExperienceEditForm({ experience }: ExperienceEditFormProps) {
 
   const handleSubmit = async (data: Partial<Experience>) => {
     await graphqlClient.request(UPDATE_EXPERIENCE_MUTATION, { id, input: data });
+    router.refresh();
     router.push(`/experiences/${id}`);
   };
 

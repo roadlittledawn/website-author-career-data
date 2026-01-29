@@ -16,6 +16,7 @@ const UPDATE_EDUCATION_MUTATION = gql`
       field
       graduationYear
       relevantCoursework
+      displayOrder
     }
   }
 `;
@@ -30,6 +31,7 @@ export function EducationEditForm({ education }: EducationEditFormProps) {
 
   const handleSubmit = async (data: Partial<Education>) => {
     await graphqlClient.request(UPDATE_EDUCATION_MUTATION, { id, input: data });
+    router.refresh();
     router.push(`/education/${id}`);
   };
 

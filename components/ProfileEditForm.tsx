@@ -20,6 +20,7 @@ const UPDATE_PROFILE_MUTATION = gql`
           portfolio
           github
           linkedin
+          writingSamples
         }
       }
       positioning {
@@ -47,6 +48,7 @@ export function ProfileEditForm({ profile }: ProfileEditFormProps) {
 
   const handleSubmit = async (data: Partial<Profile>) => {
     await graphqlClient.request(UPDATE_PROFILE_MUTATION, { input: data });
+    router.refresh();
     router.push('/profile');
   };
 

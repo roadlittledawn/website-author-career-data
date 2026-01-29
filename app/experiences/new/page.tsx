@@ -25,6 +25,7 @@ export default function NewExperiencePage() {
       CREATE_EXPERIENCE_MUTATION,
       { input: data }
     );
+    router.refresh();
     router.push(`/experiences/${result.createExperience.id}`);
   };
 

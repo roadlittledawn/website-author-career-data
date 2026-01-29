@@ -30,6 +30,7 @@ export default function NewSkillPage() {
       CREATE_SKILL_MUTATION,
       { input: data }
     );
+    router.refresh();
     router.push(`/skills/${result.createSkill.id}`);
   };
 

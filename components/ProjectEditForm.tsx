@@ -23,6 +23,11 @@ const UPDATE_PROJECT_MUTATION = gql`
       technologies
       keywords
       roleTypes
+      links {
+        url
+        linkText
+        type
+      }
     }
   }
 `;
@@ -37,6 +42,7 @@ export function ProjectEditForm({ project }: ProjectEditFormProps) {
 
   const handleSubmit = async (data: Partial<Project>) => {
     await graphqlClient.request(UPDATE_PROJECT_MUTATION, { id: projectId, input: data });
+    router.refresh();
     router.push(`/projects/${projectId}`);
   };
 

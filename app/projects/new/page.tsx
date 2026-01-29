@@ -24,6 +24,7 @@ export default function NewProjectPage() {
       CREATE_PROJECT_MUTATION,
       { input: data }
     );
+    router.refresh();
     router.push(`/projects/${result.createProject.id}`);
   };
 

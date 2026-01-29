@@ -13,6 +13,7 @@ const EDUCATION_QUERY = gql`
       field
       graduationYear
       relevantCoursework
+      displayOrder
       createdAt
       updatedAt
     }

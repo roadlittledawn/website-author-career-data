@@ -74,7 +74,7 @@ export function ExperienceDetail({ experience }: ExperienceDetailProps) {
         {experience.summary && (
           <div className={styles.section}>
             <h2>Summary</h2>
-            <p className={styles.summary}>{experience.summary}</p>
+            <p>{experience.summary}</p>
           </div>
         )}
 

@@ -85,8 +85,8 @@ export function SkillsList({ initialSkills }: SkillsListProps) {
             return (
               <div key={skillId} className={styles.skillCard}>
                 <div className={styles.cardContent}>
-                  <h3 className={styles.skillName}>
-                    {skill.name}
+                  <h3>
+                    <span className={styles.skillName}>{skill.name}</span>
                     {skill.featured && <span className={styles.featuredBadge}>⭐ Featured</span>}
                   </h3>
 

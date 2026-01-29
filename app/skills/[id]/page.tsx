@@ -16,6 +16,7 @@ const SKILL_QUERY = gql`
       iconName
       tags
       keywords
+      featured
       createdAt
       updatedAt
     }

@@ -50,6 +50,7 @@ export interface Experience {
   location: string;
   title: string;
   industry?: string;
+  summary?: string;
   startDate: string;
   endDate?: string;
   roleTypes: string[];
@@ -73,6 +74,7 @@ export interface Skill {
   tags: string[];
   keywords: string[];
   iconName?: string;
+  featured: boolean;
   createdAt: string;
   updatedAt: string;
 }

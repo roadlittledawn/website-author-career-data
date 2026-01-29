@@ -11,6 +11,7 @@ const SKILLS_QUERY = gql`
       level
       rating
       roleRelevance
+      featured
     }
   }
 `;

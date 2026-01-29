@@ -61,6 +61,7 @@ export default function ExperienceForm({
       location: initialData?.location || "",
       title: initialData?.title || "",
       industry: initialData?.industry || "",
+      summary: initialData?.summary || "",
       startDate: initialData?.startDate
         ? new Date(initialData.startDate).toISOString().split("T")[0]
         : "",
@@ -85,6 +86,7 @@ export default function ExperienceForm({
         location: data.location,
         title: data.title,
         industry: data.industry || undefined,
+        summary: data.summary || undefined,
         startDate: data.startDate,
         endDate: data.endDate || undefined,
         organizations: organizations.length > 0 ? organizations : undefined,
@@ -306,6 +308,18 @@ export default function ExperienceForm({
             placeholder="e.g., Software, Financial Services, Healthcare"
             disabled={isSubmitting}
           />
+        </div>
+
+        <div className={styles.field}>
+          <label htmlFor="summary">Summary</label>
+          <textarea
+            id="summary"
+            {...register("summary")}
+            placeholder="High-level summary of what the job entailed..."
+            rows={3}
+            disabled={isSubmitting}
+          />
+          <small>Used as a high-level summary on your public portfolio site</small>
         </div>
 
         <div className={styles.row}>

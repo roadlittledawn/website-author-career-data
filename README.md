@@ -33,7 +33,7 @@ A Next.js admin interface for managing professional career data via GraphQL API.
 
 **Option 1: Use Production API**
 ```env
-NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql
+NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://ID.lambda-url.REGION.on.aws/graphql
 NEXT_PUBLIC_API_KEY=your-api-key
 ```
 
@@ -80,7 +80,7 @@ npm run dev  # Starts on http://localhost:8888
    ADMIN_PASSWORD_HASH=your-bcrypt-hashed-password
 
    # GraphQL API
-   NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql
+   NEXT_PUBLIC_GRAPHQL_ENDPOINT=https://ID.lambda-url.REGION.on.aws/graphql
    NEXT_PUBLIC_API_KEY=your-api-key-here
    ```
 
@@ -187,7 +187,7 @@ See [REQUIREMENTS.md](./REQUIREMENTS.md) for detailed schema documentation.
 
 The app connects to a centralized GraphQL API hosted on AWS Lambda. All queries and mutations require API key authentication via `X-API-Key` header.
 
-**API Endpoint**: `https://rndo54zjrsxy7ppxxobie7pgki0vlibt.lambda-url.us-west-2.on.aws/graphql`
+**API Endpoint**: `https://ID.lambda-url.REGION.on.aws/graphql`
 
 ### Example Queries
 

@@ -60,7 +60,7 @@ export default function ProjectForm({ initialData, onSubmit, onCancel }: Project
         impact: data.impact || undefined,
         technologies,
         keywords,
-        links: links.length > 0 ? links : undefined,
+        links: links,
         roleTypes: data.roleTypes,
       };
 
